@@ -4,10 +4,10 @@
      
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
-          <li class="dropdown user user-menu"> <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <img src="dist/img/img1.jpg" class="user-image" alt="User Image"> <span class="hidden-xs"><?php echo $_SESSION['nama'] ?></span> </a>
+          <li class="dropdown user user-menu"> <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <img src="user.jpg" class="user-image" alt="User Image"> <span class="hidden-xs"><?php echo $_SESSION['nama'] ?></span> </a>
             <ul class="dropdown-menu">
               <li class="user-header">
-                <div class="pull-left user-img"><img src="dist/img/img1.jpg" class="img-responsive" alt="User"></div>
+                <div class="pull-left user-img"><img src="user.jpg" class="img-responsive" alt="User"></div>
                 <p class="text-left"><?php echo $_SESSION['nama'] ?> <small><?php echo $_SESSION['email'] ?></small> </p>
               </li>
               <li><a href="logout.php"><i class="fa fa-power-off"></i> Logout</a></li>
