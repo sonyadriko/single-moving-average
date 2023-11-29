@@ -71,7 +71,6 @@
                 while($display = mysqli_fetch_array($get_data)) {
                     $id = $display['id_barang'];
                     $nama = $display['nama_barang'];
-                    $username = $display['harga_barang']
 
                 
                 ?>

@@ -11,7 +11,7 @@
         <li> <a href="barang.php"><i class="fa fa-bullseye"></i> <span>Data Barang</span> <span class="pull-right-container"></span> </a>
         </li>
         <li> <a href="penjualan.php"> <i class="fa fa-th"></i> <span>Data Penjualan</span></a> </li>
-        <li class="treeview"> <a href="#"><i class="fa fa-briefcase"></i> <span>Prediksi</span> <span class="pull-right-container"></span> </a>
+        <li> <a href="prediksi.php"><i class="fa fa-briefcase"></i> <span>Prediksi</span> <span class="pull-right-container"></span> </a>
         </li>
       </ul>
       <!-- sidebar-menu --> 

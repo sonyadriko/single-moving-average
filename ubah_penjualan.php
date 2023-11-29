@@ -13,7 +13,6 @@ while($row = mysqli_fetch_assoc($query)){
     $jumlah = $row['jumlah'];
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,13 +20,10 @@ while($row = mysqli_fetch_assoc($query)){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ubah Penjualan</title>
-
     <!-- Bootstrap -->
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
-
     <!-- Template style -->
     <link rel="stylesheet" href="dist/css/style.css">
     <link rel="stylesheet" href="dist/et-line-font/et-line-font.css">
