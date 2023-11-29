@@ -50,7 +50,10 @@
                 <div class="chart-box">
                     <h4>Prediksi</h4>
                     <form method="GET" action="perhitungan.php">
-                        <label>Nama Barang : </label>
+                        <div class="row">
+                        <div class="col-md-4">
+                        <fieldset class="form-group">
+                        <label class="mb-3">Nama Barang : </label>
                         <select class="form-control" id="nama_barang" name="nama_barang">
                             <option value="" selected disabled>Pilih Barang</option>
 
@@ -72,7 +75,10 @@
                             }
                             ?>
                         </select>
-
+                        </fieldset>
+                        </div>
+                        <div class="col-md-4">
+                        <fieldset class="form-group">
                         <label>Durasi : </label>
                         <select class="form-control" id="durasi" name="durasi">
                             <option value="" selected disabled>Pilih Durasi</option>
@@ -80,7 +86,9 @@
                             <option value="mingguan">Mingguan</option>
                             <option value="20harian">20 Harian</option>
                         </select>
-
+                        </fieldset>
+                        </div>
+                        </div>
                         <!-- Submit button -->
                         <button type="submit" class="btn btn-primary">Hitung</button>
                     </form>
@@ -102,13 +110,6 @@
 <script src="dist/js/jquery.min.js"></script> 
 <script src="bootstrap/js/bootstrap.min.js"></script> 
 <script src="dist/js/ovio.js"></script> 
-<script src="plugins/tables/jquery.tablesort.js"></script> 
-<script type="text/javascript">
-(function($) {
-  "use strict";
-$("table").tablesort();
-})(jQuery);
-</script>
 </body>
 </html>
 
