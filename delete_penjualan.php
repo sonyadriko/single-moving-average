@@ -10,7 +10,7 @@
 
 		if ($result) {
 			// code...
-			header("Location:barang.php");
+			header("Location:penjualan.php");
 		}else {
 			echo "Please Check Again";
 		}

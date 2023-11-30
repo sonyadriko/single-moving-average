@@ -41,6 +41,7 @@ if (!isset($_SESSION['id_admin'])) {
                     <div class="col-md-12">
                         <div class="chart-box">
                             <h4>Data Penjualan</h4>
+                        <div class="row">
                             
                             <div class="col-md-4">
                             <form action="tambah_penjualan.php" method="post">
@@ -84,6 +85,7 @@ if (!isset($_SESSION['id_admin'])) {
                             </form>
 
                             </div>
+                                    </div>
                         </div>
                     </div>
                 </div>

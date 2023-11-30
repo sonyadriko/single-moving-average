@@ -41,20 +41,24 @@ if (!isset($_SESSION['id_admin'])) {
                     <div class="col-md-12">
                         <div class="chart-box">
                             <h4>Data Barang</h4>
-                            
+                            <form action="tambah_barang.php" method="post">
+                            <div class="row">
                             <div class="col-md-4">
-                                <form action="tambah_barang.php" method="post">
-                                    <fieldset class="form-group">
-                                        <label for="nama_barang">Nama Barang</label>
-                                        <input class="form-control" id="nama_barang" name="nama_barang" type="text" placeholder="Enter Nama Barang">
-                                    </fieldset>
-                                    <!-- <fieldset class="form-group">
-                                        <label for="harga_barang">Harga Barang</label>
-                                        <input class="form-control" id="harga_barang" name="harga_barang" type="text" placeholder="Enter Harga Barang">
-                                    </fieldset> -->
-                                    <input type="submit" class="btn btn-primary btn-user btn-block" name="submit" value="Tambah">
-                                </form>
+                                <fieldset class="form-group">
+                                        <fieldset class="form-group">
+                                            <label for="nama_barang">Nama Barang</label>
+                                            <input class="form-control" id="nama_barang" name="nama_barang" type="text" placeholder="Enter Nama Barang">
+                                        </fieldset>
+                                        <!-- <fieldset class="form-group">
+                                            <label for="harga_barang">Harga Barang</label>
+                                            <input class="form-control" id="harga_barang" name="harga_barang" type="text" placeholder="Enter Harga Barang">
+                                        </fieldset> -->
+                                        <input type="submit" class="btn btn-primary btn-user btn-block" name="submit" value="Tambah">
+                                </fieldset>
                             </div>
+</div>
+                            </form>
+
                         </div>
                     </div>
                 </div>
@@ -83,7 +87,7 @@ if (!isset($_SESSION['id_admin'])) {
 
         if($insertResult){
             echo "<script>alert('Berhasil menambah data barang.')</script>";
-            echo "<script>window.location.href = 'tambah_barang.php';</script>";
+            echo "<script>window.location.href = 'barang.php';</script>";
             // Alternatively, you can use: echo "<script>location.reload();</script>";
         } else {
             echo "Error: " . mysqli_error($conn);

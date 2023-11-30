@@ -47,34 +47,53 @@
     <!-- Main content -->
     <section class="content container-fluid">
       <div class="row">
-        <div class="col-lg-3 col-xs-6">
+        <div class="col-lg-4 col-xs-6">
           <div class="media-box">
             <div class="media-icon pull-left"><i class="icon-bargraph"></i> </div>
             <div class="media-info">
+              
               <h5>Data Barang</h5>
-              <h3>1530</h3>
+              <h3>
+              <?php // Query to get total items
+              $sql = "SELECT COUNT(*) AS jumlah FROM barang";
+              $resultBarang = $conn->query($sql); 
+              $hasilBarang = mysqli_fetch_array($resultBarang);
+              echo "{$hasilBarang['jumlah']}";?>
+              </h3>
             </div>
           </div>
         </div>
-        <div class="col-lg-3 col-xs-6">
+        <div class="col-lg-4 col-xs-6">
           <div class="media-box bg-sea">
             <div class="media-icon pull-left"><i class="icon-wallet"></i> </div>
             <div class="media-info">
               <h5>Data Penjualan</h5>
-              <h3>$8,530</h3>
+              <h3>
+              <?php // Query to get total items
+              $sql = "SELECT COUNT(*) AS jumlah FROM penjualan";
+              $resultBarang = $conn->query($sql); 
+              $hasilBarang = mysqli_fetch_array($resultBarang);
+              echo "{$hasilBarang['jumlah']}";?>
+              </h3>
             </div>
           </div>
         </div>
-        <div class="col-lg-3 col-xs-6">
+        <div class="col-lg-4 col-xs-6">
           <div class="media-box bg-blue">
             <div class="media-icon pull-left"><i class="icon-basket"></i> </div>
             <div class="media-info">
               <h5>Data User</h5>
-              <h3>935</h3>
+              <h3>
+              <?php // Query to get total items
+              $sql = "SELECT COUNT(*) AS jumlah FROM admin";
+              $resultBarang = $conn->query($sql); 
+              $hasilBarang = mysqli_fetch_array($resultBarang);
+              echo "{$hasilBarang['jumlah']}";?>
+              </h3>
             </div>
           </div>
         </div>
-        <div class="col-lg-3 col-xs-6">
+        <!-- <div class="col-lg-3 col-xs-6">
           <div class="media-box bg-green">
             <div class="media-icon pull-left"><i class="icon-layers"></i> </div>
             <div class="media-info">
@@ -82,7 +101,7 @@
               <h3>5324</h3>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
       
       <div class="row">
