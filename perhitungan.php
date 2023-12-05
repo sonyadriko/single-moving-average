@@ -173,113 +173,113 @@ if (!isset($_SESSION['id_admin'])) {
                     }
 
 
-echo "<p>Results for $durasi period:</p>";
+                    echo "<p>Results for $durasi period:</p>";
 
-if ($durasi == 'harian') {
-    echo "<table class='table'>";
-    echo "<thead><tr><th>Date</th><th>Actual Sales</th><th>Daily Moving Average</th><th>MAPE</th></tr></thead>";
-    echo "<tbody>";
+                    if ($durasi == 'harian') {
+                        echo "<table class='table'>";
+                        echo "<thead><tr><th>Date</th><th>Actual Sales</th><th>Daily Moving Average</th><th>MAPE</th></tr></thead>";
+                        echo "<tbody>";
 
-    // Initialize arrays to store daily averages and actual sales
-    $daily_averages = [];
-    $actual_sales = [];
+                        // Initialize arrays to store daily averages and actual sales
+                        $daily_averages = [];
+                        $actual_sales = [];
 
-    // Calculate daily moving average considering today and the three days before
-    for ($i = 0; $i < count($sales_data); $i++) {
-        if ($i < 3) {
-            $daily_average = null;
-            $mape = null;
-        } else {
-            $average_sales = array_slice($sales_data, $i - 3, 4);
-            $daily_average = array_sum(array_column($average_sales, 'jumlah')) / count($average_sales);
-            $mape = abs(($sales_data[$i]['jumlah'] - $daily_average) / $sales_data[$i]['jumlah']) * 100;
+                        // Calculate daily moving average considering today and the three days before
+                        for ($i = 0; $i < count($sales_data); $i++) {
+                            if ($i < 3) {
+                                $daily_average = null;
+                                $mape = null;
+                            } else {
+                                $average_sales = array_slice($sales_data, $i - 3, 4);
+                                $daily_average = array_sum(array_column($average_sales, 'jumlah')) / count($average_sales);
+                                $mape = abs(($sales_data[$i]['jumlah'] - $daily_average) / $sales_data[$i]['jumlah']) * 100;
 
-            // Populate the arrays with daily averages and actual sales
-            $daily_averages[] = number_format($daily_average, 2);
-            $actual_sales[] = $sales_data[$i]['jumlah'];
+                                // Populate the arrays with daily averages and actual sales
+                                $daily_averages[] = number_format($daily_average, 2);
+                                $actual_sales[] = $sales_data[$i]['jumlah'];
 
-            // Calculate the overall daily average
-            $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
-            $rounded_overall_daily_average = number_format($overall_daily_average, 1);
-        }
+                                // Calculate the overall daily average
+                                $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
+                                $rounded_overall_daily_average = number_format($overall_daily_average, 1);
+                            }
 
-        echo "<tr>";
-        echo "<td>" . $sales_data[$i]['tanggal'] . " September 2023" .  "</td>";
-        echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
-        echo "<td>" . ($daily_average !== null ? number_format($daily_average, 2) : 'N/A') . "</td>";
-        echo "<td>" . ($mape !== null ? number_format($mape, 2) . "%" : 'N/A') . "</td>";
-        echo "</tr>";
-    }
+                            echo "<tr>";
+                            echo "<td>" . $sales_data[$i]['tanggal'] . " September 2023" .  "</td>";
+                            echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
+                            echo "<td>" . ($daily_average !== null ? number_format($daily_average, 2) : 'N/A') . "</td>";
+                            echo "<td>" . ($mape !== null ? number_format($mape, 2) . "%" : 'N/A') . "</td>";
+                            echo "</tr>";
+                        }
 
-    echo "<tr>";
-    echo "<td>1 Oktober 2023</td>";
-    echo "<td>N/A</td>";
-    echo "<td>" . $rounded_overall_daily_average . "</td>";
-    echo "<td>N/A</td>";
-    echo "</tr>";
+                        echo "<tr>";
+                        echo "<td>1 Oktober 2023</td>";
+                        echo "<td>N/A</td>";
+                        echo "<td>" . $rounded_overall_daily_average . "</td>";
+                        echo "<td>N/A</td>";
+                        echo "</tr>";
 
-    echo "</tbody>";
-    echo "</table>";
+                        echo "</tbody>";
+                        echo "</table>";
 
-    // Add the chart
-    echo "<canvas id='dailyAverageChart' width='400' height='200'></canvas>";
-    echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
-    echo "<script>";
-echo "var ctx = document.getElementById('dailyAverageChart').getContext('2d');";
+                        // Add the chart
+                        echo "<canvas id='dailyAverageChart' width='400' height='200'></canvas>";
+                        echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
+                        echo "<script>";
+                        echo "var ctx = document.getElementById('dailyAverageChart').getContext('2d');";
 
-echo "var dates = [];";
-echo "var dailyAverages = [];";
-echo "var actualSales = [];";
+                        echo "var dates = [];";
+                        echo "var dailyAverages = [];";
+                        echo "var actualSales = [];";
 
-// Populate the dates, daily averages, and actual sales arrays for the chart
-foreach ($sales_data as $key => $data) {
-    if ($key >= 3) {
-        $average_sales = array_slice($sales_data, $key - 3, 4);
-        $daily_average = array_sum(array_column($average_sales, 'jumlah')) / count($average_sales);
+                        // Populate the dates, daily averages, and actual sales arrays for the chart
+                        foreach ($sales_data as $key => $data) {
+                            if ($key >= 3) {
+                                $average_sales = array_slice($sales_data, $key - 3, 4);
+                                $daily_average = array_sum(array_column($average_sales, 'jumlah')) / count($average_sales);
 
-        // Calculate the overall daily average within the loop
-        $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
-        $rounded_overall_daily_average = number_format($overall_daily_average, 1);
+                                // Calculate the overall daily average within the loop
+                                $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
+                                $rounded_overall_daily_average = number_format($overall_daily_average, 1);
 
-        // Populate the arrays with daily averages and actual sales
-        echo "dates.push('" . $data['tanggal'] . "');";
-        echo "dailyAverages.push(" . number_format($daily_average, 2) . ");";
-        echo "actualSales.push(" . $data['jumlah'] . ");";
-    }
-}
+                                // Populate the arrays with daily averages and actual sales
+                                echo "dates.push('" . $data['tanggal'] . "');";
+                                echo "dailyAverages.push(" . number_format($daily_average, 2) . ");";
+                                echo "actualSales.push(" . $data['jumlah'] . ");";
+                            }
+                        }
 
-// Manually add the last date and the overall daily average to ensure they connect
-echo "dates.push('1');";
-echo "dailyAverages.push(" . $rounded_overall_daily_average . ");";
-echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
+                        // Manually add the last date and the overall daily average to ensure they connect
+                        echo "dates.push('1');";
+                        echo "dailyAverages.push(" . $rounded_overall_daily_average . ");";
+                        echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
 
-echo "var myChart = new Chart(ctx, {";
-echo "type: 'line',";
-echo "data: {";
-echo "labels: dates,";
-echo "datasets: [{";
-echo "label: 'Daily Averages',";
-echo "data: dailyAverages,";
-echo "backgroundColor: 'rgba(75, 192, 192, 0.2)',";
-echo "borderColor: 'rgba(75, 192, 192, 1)',";
-echo "borderWidth: 1";
-echo "}, {";
-echo "label: 'Actual Sales',";
-echo "data: actualSales,";
-echo "backgroundColor: 'rgba(255, 99, 132, 0.2)',";
-echo "borderColor: 'rgba(255, 99, 132, 1)',";
-echo "borderWidth: 1";
-echo "}]},";  // close datasets and data
-echo "options: {";
-echo "scales: {";
-echo "y: {";
-echo "beginAtZero: true";
-echo "}";
-echo "}";
-echo "}";
-echo "});";
-echo "</script>";
-}
+                        echo "var myChart = new Chart(ctx, {";
+                        echo "type: 'line',";
+                        echo "data: {";
+                        echo "labels: dates,";
+                        echo "datasets: [{";
+                        echo "label: 'Daily Averages',";
+                        echo "data: dailyAverages,";
+                        echo "backgroundColor: 'rgba(75, 192, 192, 0.2)',";
+                        echo "borderColor: 'rgba(75, 192, 192, 1)',";
+                        echo "borderWidth: 1";
+                        echo "}, {";
+                        echo "label: 'Actual Sales',";
+                        echo "data: actualSales,";
+                        echo "backgroundColor: 'rgba(255, 99, 132, 0.2)',";
+                        echo "borderColor: 'rgba(255, 99, 132, 1)',";
+                        echo "borderWidth: 1";
+                        echo "}]},";  // close datasets and data
+                        echo "options: {";
+                        echo "scales: {";
+                        echo "y: {";
+                        echo "beginAtZero: true";
+                        echo "}";
+                        echo "}";
+                        echo "}";
+                        echo "});";
+                        echo "</script>";
+                    }
 
 
                     
