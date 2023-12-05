@@ -76,6 +76,7 @@
                     $jumlah = $display['jumlah'];
                 
                 
+                    
                 ?>
                 <td class="text-truncate"><?php echo $no ?></td>
                 <td class="text-truncate"><?php echo $id_barang ?></td>
