@@ -281,22 +281,22 @@ if (!isset($_SESSION['id_admin'])) {
                         echo "</script>";
                     }
 
-
-                    
-
                     elseif ($durasi == 'mingguan') {
                         // Display the results in a table
                         echo "<table class='table'>";
                         echo "<thead><tr><th>Date</th><th>Actual Sales</th><th>Moving Average</th><th>MAPE</th></tr></thead>";
                         echo "<tbody>";
-
+                    
+                        // Initialize arrays to store weekly averages and MAPE
+                        $weekly_averages = [];
+                        $mape_values = [];
+                    
                         // Calculate moving average considering today and the six days before for weekly duration
                         for ($i = 0; $i < count($sales_data); $i++) {
                             echo "<tr>";
-                            // echo "<td>" . ($i + 1) . "</td>"; // Assuming days are numbered from 1 to 30
                             echo "<td>" . $sales_data[$i]['tanggal'] . " September 2023" .  "</td>";
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
-
+                    
                             // Check if there are enough data points to calculate the moving average
                             if ($i < 6) {
                                 $weekly_average = 'N/A'; // Set to 'N/A' or any default value for the first six days
@@ -304,34 +304,108 @@ if (!isset($_SESSION['id_admin'])) {
                             } else {
                                 $average_sales = array_slice($sales_data, $i - 6, 7);
                                 $weekly_average = number_format(array_sum(array_column($average_sales, 'jumlah')) / count($average_sales), 2);
-
+                    
                                 // Calculate MAPE starting from the seventh day
                                 $mape = number_format(abs(($sales_data[$i]['jumlah'] - $weekly_average) / $sales_data[$i]['jumlah']) * 100, 2);
+                    
+                                // Populate the arrays with weekly averages and MAPE
+                                $weekly_averages[] = $weekly_average;
+                                $mape_values[] = $mape;
                             }
-
+                    
                             echo "<td>" . $weekly_average . "</td>";
-
-                            // Set MAPE to 'N/A' for the first six days
                             echo "<td>" . ($i < 6 ? 'N/A' : $mape . "%") . "</td>";
-
-                            // echo "<td>" . $next_forecast . "</td>";
+                    
                             echo "</tr>";
                         }
-
+                    
+                        // Calculate the overall weekly average after processing all days
+                        $overall_weekly_average = array_sum($weekly_averages) / count($weekly_averages);
+                        $rounded_overall_weekly_average = number_format($overall_weekly_average, 1);
+                    
+                        // Display the row for October 1, 2023
+                        echo "<tr>";
+                        echo "<td>1 Oktober 2023</td>";
+                        echo "<td>N/A</td>";
+                        echo "<td>" . $rounded_overall_weekly_average . "</td>";
+                        echo "<td>N/A</td>";
+                        echo "</tr>";
+                    
                         echo "</tbody>";
                         echo "</table>";
-                    } elseif ($durasi == '20harian') {
+                    
+                        // Add the chart
+                        echo "<canvas id='weeklyAverageChart' width='400' height='200'></canvas>";
+                        echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
+                        echo "<script>";
+                        echo "var ctx = document.getElementById('weeklyAverageChart').getContext('2d');";
+                    
+                        echo "var dates = [];";
+                        echo "var weeklyAverages = [];";
+                        echo "var actualSales = [];";
+                    
+                        // Populate the dates, weekly averages, and actual sales arrays for the chart
+                        foreach ($sales_data as $key => $data) {
+                            if ($key >= 6) {
+                                $average_sales = array_slice($sales_data, $key - 6, 7);
+                                $weekly_average = number_format(array_sum(array_column($average_sales, 'jumlah')) / count($average_sales), 2);
+                    
+                                $overall_weekly_average = array_sum($weekly_averages) / count($weekly_averages);
+                                $rounded_overall_weekly_average = number_format($overall_weekly_average, 1);
+                                // Populate the arrays with weekly averages and actual sales
+                                echo "dates.push('" . $data['tanggal'] . "');";
+                                echo "weeklyAverages.push(" . $weekly_average . ");";
+                                echo "actualSales.push(" . $data['jumlah'] . ");";
+                            }
+                        }
+                        echo "dates.push('1');";
+                        echo "weeklyAverages.push(" . $rounded_overall_weekly_average . ");";
+                        echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
+                    
+                        echo "var myChart = new Chart(ctx, {";
+                        echo "type: 'line',";
+                        echo "data: {";
+                        echo "labels: dates,";
+                        echo "datasets: [{";
+                        echo "label: 'Weekly Averages',";
+                        echo "data: weeklyAverages,";
+                        echo "backgroundColor: 'rgba(75, 192, 192, 0.2)',";
+                        echo "borderColor: 'rgba(75, 192, 192, 1)',";
+                        echo "borderWidth: 1";
+                        echo "}, {";
+                        echo "label: 'Actual Sales',";
+                        echo "data: actualSales,";
+                        echo "backgroundColor: 'rgba(255, 99, 132, 0.2)',";
+                        echo "borderColor: 'rgba(255, 99, 132, 1)',";
+                        echo "borderWidth: 1";
+                        echo "}]},";  // close datasets and data
+                        echo "options: {";
+                        echo "scales: {";
+                        echo "y: {";
+                        echo "beginAtZero: true";
+                        echo "}";
+                        echo "}";
+                        echo "}";
+                        echo "});";
+                        echo "</script>";
+                    }
+                    
+                    elseif ($durasi == '20harian') {
                         // Display the results in a table
                         echo "<table class='table'>";
                         echo "<thead><tr><th>Date</th><th>Actual Sales</th><th>Moving Average</th><th>MAPE</th></tr></thead>";
                         echo "<tbody>";
-
+                    
+                        // Initialize arrays to store 20-day averages and MAPE
+                        $twenty_day_averages = [];
+                        $mape_values = [];
+                    
                         // Calculate moving average considering today and the 19 days before for 20-day duration
                         for ($i = 0; $i < count($sales_data); $i++) {
                             echo "<tr>";
                             echo "<td>" . ($i + 1) . "</td>"; // Assuming days are numbered from 1 to 30
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
-
+                    
                             // Check if there are enough data points to calculate the moving average
                             if ($i < 19) {
                                 $twenty_day_average = 'N/A'; // Set to 'N/A' or any default value for the first 19 days
@@ -339,23 +413,96 @@ if (!isset($_SESSION['id_admin'])) {
                             } else {
                                 $average_sales = array_slice($sales_data, $i - 19, 20);
                                 $twenty_day_average = number_format(array_sum(array_column($average_sales, 'jumlah')) / count($average_sales), 2);
-
+                    
                                 // Calculate MAPE starting from the 20th day
                                 $mape = number_format(abs(($sales_data[$i]['jumlah'] - $twenty_day_average) / $sales_data[$i]['jumlah']) * 100, 2);
+                    
+                                // Populate the arrays with 20-day averages and MAPE
+                                $twenty_day_averages[] = $twenty_day_average;
+                                $mape_values[] = $mape;
                             }
-
+                    
                             echo "<td>" . $twenty_day_average . "</td>";
-
+                    
                             // Set MAPE to 'N/A' for the first 19 days
                             echo "<td>" . ($i < 19 ? 'N/A' : $mape . "%") . "</td>";
-
-                            // echo "<td>" . $next_forecast . "</td>";
+                    
                             echo "</tr>";
                         }
-
+                    
+                        // Calculate the overall 20-day average after processing all days
+                        $overall_twenty_day_average = array_sum($twenty_day_averages) / count($twenty_day_averages);
+                        $rounded_overall_twenty_day_average = number_format($overall_twenty_day_average, 1);
+                    
+                        // Display the row for October 1, 2023
+                        echo "<tr>";
+                        echo "<td>1 Oktober 2023</td>";
+                        echo "<td>N/A</td>";
+                        echo "<td>" . $rounded_overall_twenty_day_average . "</td>";
+                        echo "<td>N/A</td>";
+                        echo "</tr>";
+                    
                         echo "</tbody>";
                         echo "</table>";
+                    
+                        // Add the chart
+                        echo "<canvas id='twentyDayAverageChart' width='400' height='200'></canvas>";
+                        echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
+                        echo "<script>";
+                        echo "var ctx = document.getElementById('twentyDayAverageChart').getContext('2d');";
+                    
+                        echo "var dates = [];";
+                        echo "var twentyDayAverages = [];";
+                        echo "var actualSales = [];";
+                    
+                        // Populate the dates, 20-day averages, and actual sales arrays for the chart
+                        foreach ($sales_data as $key => $data) {
+                            if ($key >= 19) {
+                                $average_sales = array_slice($sales_data, $key - 19, 20);
+                                $twenty_day_average = number_format(array_sum(array_column($average_sales, 'jumlah')) / count($average_sales), 2);
+
+                                $overall_twenty_day_average = array_sum($twenty_day_averages) / count($twenty_day_averages);
+                                $rounded_overall_twenty_day_average = number_format($overall_twenty_day_average, 1);
+                    
+                                // Populate the arrays with 20-day averages and actual sales
+                                echo "dates.push('" . $data['tanggal'] . "');";
+                                echo "twentyDayAverages.push(" . $twenty_day_average . ");";
+                                echo "actualSales.push(" . $data['jumlah'] . ");";
+                            }
+                        }
+
+                        echo "dates.push('1');";
+                        echo "twentyDayAverages.push(" . $rounded_overall_twenty_day_average . ");";
+                        echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
+                    
+                        echo "var myChart = new Chart(ctx, {";
+                        echo "type: 'line',";
+                        echo "data: {";
+                        echo "labels: dates,";
+                        echo "datasets: [{";
+                        echo "label: '20-Day Averages',";
+                        echo "data: twentyDayAverages,";
+                        echo "backgroundColor: 'rgba(75, 192, 192, 0.2)',";
+                        echo "borderColor: 'rgba(75, 192, 192, 1)',";
+                        echo "borderWidth: 1";
+                        echo "}, {";
+                        echo "label: 'Actual Sales',";
+                        echo "data: actualSales,";
+                        echo "backgroundColor: 'rgba(255, 99, 132, 0.2)',";
+                        echo "borderColor: 'rgba(255, 99, 132, 1)',";
+                        echo "borderWidth: 1";
+                        echo "}]},";  // close datasets and data
+                        echo "options: {";
+                        echo "scales: {";
+                        echo "y: {";
+                        echo "beginAtZero: true";
+                        echo "}";
+                        echo "}";
+                        echo "}";
+                        echo "});";
+                        echo "</script>";
                     }
+                    
                 }
                 ?>
             </div>
