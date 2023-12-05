@@ -172,7 +172,8 @@ if (!isset($_SESSION['id_admin'])) {
                         $sales_data[] = $row;
                     }
 
-                    // Display the results in a table
+                                    
+
                     echo "<p>Results for $durasi period:</p>";
 
                     if ($durasi == 'harian') {
@@ -180,32 +181,96 @@ if (!isset($_SESSION['id_admin'])) {
                         echo "<thead><tr><th>Date</th><th>Actual Sales</th><th>Daily Moving Average</th><th>MAPE</th></tr></thead>";
                         echo "<tbody>";
 
+                        // Initialize an array to store daily averages
+                        $daily_averages = [];
+
                         // Calculate daily moving average considering today and the three days before
                         for ($i = 0; $i < count($sales_data); $i++) {
-                            // Check if there are enough data points to calculate the moving average
                             if ($i < 3) {
-                                $daily_average = null; // Set to null or any default value for the first three days
-                                $mape = null; // Set to null for the first three days
+                                $daily_average = null;
+                                $mape = null;
                             } else {
                                 $average_sales = array_slice($sales_data, $i - 3, 4);
                                 $daily_average = array_sum(array_column($average_sales, 'jumlah')) / count($average_sales);
-
-                                // Calculate MAPE starting from the fourth day
                                 $mape = abs(($sales_data[$i]['jumlah'] - $daily_average) / $sales_data[$i]['jumlah']) * 100;
+
+                                // Populate the array with daily averages
+                                $daily_averages[] = $daily_average;
                             }
 
                             echo "<tr>";
-                            echo "<td>" . $sales_data[$i]['tanggal'] . "</td>"; // Replace with the actual date from your database column "tanggal"
+                            echo "<td>" . $sales_data[$i]['tanggal'] . " September 2023" .  "</td>";
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
                             echo "<td>" . ($daily_average !== null ? number_format($daily_average, 2) : 'N/A') . "</td>";
                             echo "<td>" . ($mape !== null ? number_format($mape, 2) . "%" : 'N/A') . "</td>";
-                            // echo "<td>" . $next_forecast . "</td>";
                             echo "</tr>";
+
+                            // Calculate daily moving average for the next day (1 Oktober 2023)
+                            if ($i == count($sales_data) - 1 && $i >= 2) {
+                                // Calculate the average of the daily averages
+                                $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
+                            
+                                // Round the overall daily average to one decimal place
+                                $rounded_overall_daily_average = number_format($overall_daily_average, 1);
+                            
+                                echo "<tr>";
+                                echo "<td>1 Oktober 2023</td>";
+                                echo "<td>N/A</td>";
+                                echo "<td>" . $rounded_overall_daily_average . "</td>";
+                                echo "<td>N/A</td>";
+                                echo "</tr>";
+                            }
+                            
+                            
                         }
 
                         echo "</tbody>";
                         echo "</table>";
-                    } elseif ($durasi == 'mingguan') {
+
+                        // Add the chart
+                        echo "<canvas id='dailyAverageChart' width='400' height='200'></canvas>";
+                        echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
+                        echo "<script>";
+                        echo "var ctx = document.getElementById('dailyAverageChart').getContext('2d');";
+
+                        echo "var dates = [];";
+                        echo "var dailyAverages = [];";
+
+                        // Populate the dates and daily averages array for the chart
+                        foreach ($sales_data as $key => $data) {
+                            if ($key >= 3) {
+                                $average_sales = array_slice($sales_data, $key - 3, 4);
+                                $daily_average = array_sum(array_column($average_sales, 'jumlah')) / count($average_sales);
+
+                                echo "dates.push('" . $data['tanggal'] . "');";
+                                echo "dailyAverages.push(" . number_format($daily_average, 2) . ");";
+                            }
+                        }
+
+                        echo "var myChart = new Chart(ctx, {";
+                        echo "type: 'line',";
+                        echo "data: {";
+                        echo "labels: dates,";
+                        echo "datasets: [{";
+                        echo "label: 'Daily Averages',";
+                        echo "data: dailyAverages,";
+                        echo "backgroundColor: 'rgba(75, 192, 192, 0.2)',";
+                        echo "borderColor: 'rgba(75, 192, 192, 1)',";
+                        echo "borderWidth: 1";
+                        echo "}]";
+                        echo "},";
+                        echo "options: {";
+                        echo "scales: {";
+                        echo "y: {";
+                        echo "beginAtZero: true";
+                        echo "}";
+                        echo "}";
+                        echo "}";
+                        echo "});";
+                        echo "</script>";
+                    }
+
+                    elseif ($durasi == 'mingguan') {
                         // Display the results in a table
                         echo "<table class='table'>";
                         echo "<thead><tr><th>Date</th><th>Actual Sales</th><th>Moving Average</th><th>MAPE</th></tr></thead>";
@@ -214,7 +279,8 @@ if (!isset($_SESSION['id_admin'])) {
                         // Calculate moving average considering today and the six days before for weekly duration
                         for ($i = 0; $i < count($sales_data); $i++) {
                             echo "<tr>";
-                            echo "<td>" . ($i + 1) . "</td>"; // Assuming days are numbered from 1 to 30
+                            // echo "<td>" . ($i + 1) . "</td>"; // Assuming days are numbered from 1 to 30
+                            echo "<td>" . $sales_data[$i]['tanggal'] . " September 2023" .  "</td>";
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
 
                             // Check if there are enough data points to calculate the moving average
