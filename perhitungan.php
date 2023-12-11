@@ -55,98 +55,154 @@ if (!isset($_SESSION['id_admin'])) {
 
                 // Display the form to select product and duration
                 ?>
-                <form method="GET" action="perhitungan.php">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <fieldset class="form-group">
-                                <label class="mb-3">Nama Barang : </label>
-                                <select class="form-control" id="nama_barang" name="nama_barang">
-                                    <option value="" selected disabled>Pilih Barang</option>
+                  <form method="GET" action="perhitungan.php" id="hitungForm">
+    <div class="row">
+        <div class="col-md-4">
+            <fieldset class="form-group">
+                <label class="mb-3">Nama Barang : </label>
+                <select class="form-control" id="nama_barang" name="nama_barang">
+                    <option value="" selected disabled>Pilih Barang</option>
+                    <?php
+                    // Fetch data from the database
+                    $get_barang = mysqli_query($conn, "SELECT * FROM barang");
 
-                                    <?php
-                                    // Check if there are rows in the result
-                                    if (mysqli_num_rows($get_barang) > 0) {
-                                        while ($barang = mysqli_fetch_assoc($get_barang)) {
-                                            $id_barang = $barang['id_barang'];
-                                            $nama_barang = $barang['nama_barang'];
+                    // Check if there are rows in the result
+                    if (mysqli_num_rows($get_barang) > 0) {
+                        while ($barang = mysqli_fetch_assoc($get_barang)) {
+                            $id_barang = $barang['id_barang'];
+                            $nama_barang = $barang['nama_barang'];
 
-                                            // Generate options for the dropdown
-                                            echo "<option value='$id_barang'>$nama_barang</option>";
-                                        }
-                                    } else {
-                                        echo "<option value='' disabled>No barang available</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </fieldset>
-                        </div>
-                        <div class="col-md-4">
-                            <fieldset class="form-group">
-                                <label>Durasi : </label>
-                                <select class="form-control" id="durasi" name="durasi">
-                                    <option value="" selected disabled>Pilih Durasi</option>
-                                    <option value="harian">Harian</option>
-                                    <option value="mingguan">Mingguan</option>
-                                    <option value="20harian">20 Harian</option>
-                                </select>
-                            </fieldset>
-                        </div>
-                    </div>
-                    <!-- Submit button -->
-                    <button type="submit" class="btn btn-primary">Hitung</button>
-                </form>
+                            // Generate options for the dropdown
+                            echo "<option value='$id_barang'>$nama_barang</option>";
+                        }
+                    } else {
+                        echo "<option value='' disabled>No barang available</option>";
+                    }
+                    ?>
+                </select>
+            </fieldset>
+        </div>
+        <div class="col-md-4">
+            <fieldset class="form-group">
+                <label>Durasi : </label>
+                <select class="form-control" id="durasi" name="durasi">
+                    <option value="" selected disabled>Pilih Durasi</option>
+                    <option value="3hari">3 Hari</option>
+                    <option value="7hari">7 Hari</option>
+                    <option value="20harian">20 Hari</option>
+                </select>
+            </fieldset>
+        </div>
+        <div class="col-md-4">
+            <fieldset class="form-group">
+                <label>Bulan : </label>
+                <select class="form-control" id="bulan" name="bulan">
+                    <option value="" selected disabled>Pilih Bulan</option>
+                    <?php
+                    // Generate options for the dropdown (January to December)
+                    $months = [
+                        "January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"
+                    ];
+
+                    foreach ($months as $month) {
+                        echo "<option value='$month'>$month</option>";
+                    }
+                    ?>
+                </select>
+            </fieldset>
+        </div>
+        <div class="col-md-4">
+            <fieldset class="form-group">
+                <label>Tanggal Awal : </label>
+                <select class="form-control" id="tanggal_awal" name="tanggal_awal">
+                    <option value="" selected disabled>Pilih Tanggal Awal</option>
+                    <?php
+                    // Generate options for the dropdown (1 to 30)
+                    for ($i = 1; $i <= 30; $i++) {
+                        echo "<option value='$i'>$i</option>";
+                    }
+                    ?>
+                </select>
+            </fieldset>
+        </div>
+        <div class="col-md-4">
+            <fieldset class="form-group">
+                <label>Tanggal Akhir : </label>
+                <select class="form-control" id="tanggal_akhir" name="tanggal_akhir">
+                    <option value="" selected disabled>Pilih Tanggal Akhir</option>
+                </select>
+            </fieldset>
+        </div>
+    </div>
+    <!-- Submit button -->
+    <button type="button" class="btn btn-primary" onclick="hitung()">Hitung</button>
+</form>
+
+<script>
+    // Function to update the options for Tanggal Akhir based on selected Tanggal Awal
+    function updateTanggalAkhirOptions() {
+        var tanggalAwal = document.getElementById("tanggal_awal");
+        var tanggalAkhir = document.getElementById("tanggal_akhir");
+
+        // Clear existing options
+        tanggalAkhir.innerHTML = '<option value="" selected disabled>Pilih Tanggal Akhir</option>';
+
+        // Get the selected value of Tanggal Awal
+        var selectedTanggalAwal = tanggalAwal.value;
+
+        // Generate options for Tanggal Akhir based on Tanggal Awal
+        for (var i = parseInt(selectedTanggalAwal) + 1; i <= 30; i++) {
+            tanggalAkhir.innerHTML += '<option value="' + i + '">' + i + '</option>';
+        }
+    }
+
+    // Function to be called when Durasi, Bulan, or Tanggal Awal is changed
+    function hitung() {
+        // Add your logic here to handle the calculation
+        // You can retrieve selected values using document.getElementById("element_id").value
+        // For example:
+        var namaBarang = document.getElementById("nama_barang").value;
+        var durasi = document.getElementById("durasi").value;
+        var bulan = document.getElementById("bulan").value;
+        var tanggalAwal = document.getElementById("tanggal_awal").value;
+        var tanggalAkhir = document.getElementById("tanggal_akhir").value;
+
+        // You can use these values to perform the calculation or send them to the server for processing
+        // Example: You might want to use AJAX to send the data to the server
+        // For simplicity, I'll just submit the form for now
+        document.getElementById("hitungForm").submit();
+    }
+
+    // Add event listeners to update Tanggal Akhir options when Tanggal Awal is changed
+    document.getElementById("tanggal_awal").addEventListener("change", updateTanggalAkhirOptions);
+</script>
+
 
                 <?php
                 // Check if form is submitted
-                if (isset($_GET['nama_barang']) && isset($_GET['durasi'])) {
+                if (isset($_GET['nama_barang']) && isset($_GET['durasi']) && isset($_GET['bulan']) && isset($_GET['tanggal_awal']) && isset($_GET['tanggal_akhir'])) {
                     // Retrieve selected product and duration
                     $id_barang = $_GET['nama_barang'];
                     $durasi = $_GET['durasi'];
+                    $selected_month = $_GET['bulan'];
+                    $tanggal_awal = $_GET['tanggal_awal'];
+                    $tanggal_akhir = $_GET['tanggal_akhir'];
 
                     // Fetch historical sales data for the selected product
-                    $get_sales_data = mysqli_query($conn, "SELECT * FROM penjualan WHERE id_barang = $id_barang ORDER BY tanggal ASC");
-
+                    $get_sales_data = mysqli_query($conn, "SELECT * FROM penjualan WHERE id_barang = $id_barang AND tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir' ORDER BY tanggal ASC");
+                    
                     $sales_data = array();
-                    while ($row = mysqli_fetch_assoc($get_sales_data)) {
-                        $sales_data[] = $row['jumlah'];
-                    }
-
-                    // Calculate single moving average based on the chosen duration
-                    function calculateSMA($data, $period) {
-                        $sma = array();
-                        $total = 0;
-
-                        for ($i = 0; $i < $period; $i++) {
-                            $total += $data[$i];
+                        while ($row = mysqli_fetch_assoc($get_sales_data)) {
+                            $sales_data[] = $row;  // Menyimpan seluruh baris sebagai array asosiatif
                         }
-
-                        $sma[] = $total / $period;
-
-                        for ($i = $period; $i < count($data); $i++) {
-                            $total = $total - $data[$i - $period] + $data[$i];
-                            $sma[] = $total / $period;
-                        }
-
-                        return $sma;
-                    }
-
-                    // Calculate MAPE (Mean Absolute Percentage Error)
-                    function calculateMAPE($actual, $forecast) {
-                        $totalError = 0;
-
-                        for ($i = 0; $i < count($actual); $i++) {
-                            $totalError += abs(($actual[$i] - $forecast[$i]) / $actual[$i]) * 100;
-                        }
-
-                        return $totalError / count($actual);
-                    }
 
                     // Calculate SMA based on the chosen duration
                     switch ($durasi) {
-                        case 'harian':
+                        case '3hari':
                             $period = 1;
                             break;
-                        case 'mingguan':
+                        case '7hari':
                             $period = 7;
                             break;
                         case '20harian':
@@ -157,34 +213,22 @@ if (!isset($_SESSION['id_admin'])) {
                             break;
                     }
 
-                    $sma_values = calculateSMA($sales_data, $period);
-
-                    // Calculate MAPE and forecast for the next period
-                    $actual_data = array_slice($sales_data, $period);
-                    $mape = calculateMAPE($actual_data, array_slice($sma_values, 0, count($actual_data)));
-                    $next_forecast = end($sma_values);
-
-                    
-                    $get_sales_data = mysqli_query($conn, "SELECT tanggal, jumlah FROM penjualan WHERE id_barang = $id_barang ORDER BY tanggal ASC");
-
-                    $sales_data = array();
-                    while ($row = mysqli_fetch_assoc($get_sales_data)) {
-                        $sales_data[] = $row;
-                    }
-
-
                     echo "<p>Results for $durasi period:</p>";
 
-                    if ($durasi == 'harian') {
+                    if ($durasi == '3hari') {
+                        // Assuming $tanggal_awal and $tanggal_akhir are the selected start and end dates
+                        
+                       
+                        // Display the filtered sales data in a table
                         echo "<table class='table'>";
                         echo "<thead><tr><th>Date</th><th>Actual Sales</th><th>Daily Moving Average</th><th>MAPE</th></tr></thead>";
                         echo "<tbody>";
-
-                        // Initialize arrays to store daily averages and actual sales
                         $daily_averages = [];
                         $actual_sales = [];
 
-                        // Calculate daily moving average considering today and the three days before
+                        // $sdate = $start_date + 2;
+                        // var_dump($sdate);
+                
                         for ($i = 0; $i < count($sales_data); $i++) {
                             if ($i < 3) {
                                 $daily_average = null;
@@ -201,26 +245,26 @@ if (!isset($_SESSION['id_admin'])) {
                                 // Calculate the overall daily average
                                 $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
                                 $rounded_overall_daily_average = number_format($overall_daily_average, 1);
+        
                             }
-
+                
                             echo "<tr>";
-                            echo "<td>" . $sales_data[$i]['tanggal'] . " September 2023" .  "</td>";
+                            echo "<td>" . $sales_data[$i]['tanggal'] . " " . $selected_month . "</td>";
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
                             echo "<td>" . ($daily_average !== null ? number_format($daily_average, 2) : 'N/A') . "</td>";
                             echo "<td>" . ($mape !== null ? number_format($mape, 2) . "%" : 'N/A') . "</td>";
                             echo "</tr>";
                         }
-
                         echo "<tr>";
-                        echo "<td>1 Oktober 2023</td>";
+                        echo "<td>" .$tanggal_akhir + '1' . " ". $selected_month ."</td>";
                         echo "<td>N/A</td>";
                         echo "<td>" . $rounded_overall_daily_average . "</td>";
                         echo "<td>N/A</td>";
                         echo "</tr>";
-
+                
                         echo "</tbody>";
                         echo "</table>";
-
+                
                         // Add the chart
                         echo "<canvas id='dailyAverageChart' width='400' height='200'></canvas>";
                         echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
@@ -249,7 +293,7 @@ if (!isset($_SESSION['id_admin'])) {
                         }
 
                         // Manually add the last date and the overall daily average to ensure they connect
-                        echo "dates.push('1');";
+                        echo "dates.push('".$tanggal_akhir + '1'."');";
                         echo "dailyAverages.push(" . $rounded_overall_daily_average . ");";
                         echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
 
@@ -280,8 +324,9 @@ if (!isset($_SESSION['id_admin'])) {
                         echo "});";
                         echo "</script>";
                     }
+                    
 
-                    elseif ($durasi == 'mingguan') {
+                    elseif ($durasi == '7hari') {
                         // Display the results in a table
                         echo "<table class='table'>";
                         echo "<thead><tr><th>Date</th><th>Actual Sales</th><th>Moving Average</th><th>MAPE</th></tr></thead>";
@@ -294,7 +339,7 @@ if (!isset($_SESSION['id_admin'])) {
                         // Calculate moving average considering today and the six days before for weekly duration
                         for ($i = 0; $i < count($sales_data); $i++) {
                             echo "<tr>";
-                            echo "<td>" . $sales_data[$i]['tanggal'] . " September 2023" .  "</td>";
+                            echo "<td>" . $sales_data[$i]['tanggal'] . " " . $selected_month . "</td>";
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
                     
                             // Check if there are enough data points to calculate the moving average
@@ -325,7 +370,7 @@ if (!isset($_SESSION['id_admin'])) {
                     
                         // Display the row for October 1, 2023
                         echo "<tr>";
-                        echo "<td>1 Oktober 2023</td>";
+                        echo "<td>" .$tanggal_akhir + '1' . " ". $selected_month ."</td>";
                         echo "<td>N/A</td>";
                         echo "<td>" . $rounded_overall_weekly_average . "</td>";
                         echo "<td>N/A</td>";
@@ -358,7 +403,7 @@ if (!isset($_SESSION['id_admin'])) {
                                 echo "actualSales.push(" . $data['jumlah'] . ");";
                             }
                         }
-                        echo "dates.push('1');";
+                        echo "dates.push('".$tanggal_akhir + '1'."');";
                         echo "weeklyAverages.push(" . $rounded_overall_weekly_average . ");";
                         echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
                     
@@ -403,7 +448,7 @@ if (!isset($_SESSION['id_admin'])) {
                         // Calculate moving average considering today and the 19 days before for 20-day duration
                         for ($i = 0; $i < count($sales_data); $i++) {
                             echo "<tr>";
-                            echo "<td>" . ($i + 1) . "</td>"; // Assuming days are numbered from 1 to 30
+                            echo "<td>" . ($i + 1) . " " . $selected_month . "</td>"; // Assuming days are numbered from 1 to 30
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
                     
                             // Check if there are enough data points to calculate the moving average
@@ -436,7 +481,7 @@ if (!isset($_SESSION['id_admin'])) {
                     
                         // Display the row for October 1, 2023
                         echo "<tr>";
-                        echo "<td>1 Oktober 2023</td>";
+                        echo "<td>" .$tanggal_akhir + '1' . " ". $selected_month ."</td>";
                         echo "<td>N/A</td>";
                         echo "<td>" . $rounded_overall_twenty_day_average . "</td>";
                         echo "<td>N/A</td>";
@@ -471,7 +516,7 @@ if (!isset($_SESSION['id_admin'])) {
                             }
                         }
 
-                        echo "dates.push('1');";
+                        echo "dates.push('".$tanggal_akhir + '1'."');";
                         echo "twentyDayAverages.push(" . $rounded_overall_twenty_day_average . ");";
                         echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
                     
