@@ -57,13 +57,11 @@
                 <select class="form-control" id="nama_barang" name="nama_barang">
                     <option value="" selected disabled>Pilih Barang</option>
                     <?php
-                    // Fetch data from the database
-                    // $get_barang = mysqli_query($conn, "SELECT * FROM penjualan");
                     $get_barang = mysqli_query($conn, "SELECT DISTINCT id_penjualan, nama_barang FROM penjualan");
 
                     $unique_barang = array();
                     while ($barang = mysqli_fetch_assoc($get_barang)) {
-                        $id_barang = $barang['id_barang'];
+                        $id_barang = $barang['id_penjualan'];
                         $nama_barang = $barang['nama_barang'];
                     
                         // Menyaring hasil yang unik
@@ -71,22 +69,9 @@
                             $unique_barang[] = $nama_barang;
                     
                             // Generate options for the dropdown
-                            echo "<option value='$id_barang'>$nama_barang</option>";
+                            echo "<option value='$nama_barang'>$nama_barang</option>";
                         }
                     }
-                    
-                    // Check if there are rows in the result
-                    // if (mysqli_num_rows($get_barang) > 0) {
-                    //     while ($barang = mysqli_fetch_assoc($get_barang)) {
-                    //         $id_barang = $barang['id_barang'];
-                    //         $nama_barang = $barang['nama_barang'];
-
-                    //         // Generate options for the dropdown
-                    //         echo "<option value='$id_barang'>$nama_barang</option>";
-                    //     }
-                    // } else {
-                    //     echo "<option value='' disabled>No barang available</option>";
-                    // }
                     ?>
                 </select>
             </fieldset>
@@ -114,8 +99,8 @@
                         "July", "August", "September", "October", "November", "December"
                     ];
 
-                    foreach ($months as $index => $month) {
-                        echo "<option value='" . ($index + 1) . "'>$month</option>";
+                    foreach ($months as $month) {
+                        echo "<option value='$month'>$month</option>";
                     }
                     ?>
                 </select>
