@@ -64,19 +64,34 @@ if (!isset($_SESSION['id_admin'])) {
                     <option value="" selected disabled>Pilih Barang</option>
                     <?php
                     // Fetch data from the database
-                    $get_barang = mysqli_query($conn, "SELECT * FROM barang");
+                    // $get_barang = mysqli_query($conn, "SELECT * FROM barang");
 
-                    // Check if there are rows in the result
-                    if (mysqli_num_rows($get_barang) > 0) {
-                        while ($barang = mysqli_fetch_assoc($get_barang)) {
-                            $id_barang = $barang['id_barang'];
-                            $nama_barang = $barang['nama_barang'];
+                    // // Check if there are rows in the result
+                    // if (mysqli_num_rows($get_barang) > 0) {
+                    //     while ($barang = mysqli_fetch_assoc($get_barang)) {
+                    //         $id_barang = $barang['id_barang'];
+                    //         $nama_barang = $barang['nama_barang'];
 
+                    //         // Generate options for the dropdown
+                    //         echo "<option value='$id_barang'>$nama_barang</option>";
+                    //     }
+                    // } else {
+                    //     echo "<option value='' disabled>No barang available</option>";
+                    // }
+                    $get_barang = mysqli_query($conn, "SELECT DISTINCT id_penjualan, nama_barang FROM penjualan");
+
+                    $unique_barang = array();
+                    while ($barang = mysqli_fetch_assoc($get_barang)) {
+                        $id_barang = $barang['id_penjualan'];
+                        $nama_barang = $barang['nama_barang'];
+                    
+                        // Menyaring hasil yang unik
+                        if (!in_array($nama_barang, $unique_barang)) {
+                            $unique_barang[] = $nama_barang;
+                    
                             // Generate options for the dropdown
-                            echo "<option value='$id_barang'>$nama_barang</option>";
+                            echo "<option value='$nama_barang'>$nama_barang</option>";
                         }
-                    } else {
-                        echo "<option value='' disabled>No barang available</option>";
                     }
                     ?>
                 </select>
@@ -190,7 +205,7 @@ if (!isset($_SESSION['id_admin'])) {
                     $tanggal_akhir = $_GET['tanggal_akhir'];
 
                     // Fetch historical sales data for the selected product
-                    $get_sales_data = mysqli_query($conn, "SELECT * FROM penjualan WHERE id_barang = $id_barang AND tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir' ORDER BY tanggal ASC");
+                    $get_sales_data = mysqli_query($conn, "SELECT * FROM penjualan WHERE nama_barang = '$id_barang' AND tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir' ORDER BY tanggal ASC");
                     
                     $sales_data = array();
                         while ($row = mysqli_fetch_assoc($get_sales_data)) {
@@ -245,6 +260,7 @@ if (!isset($_SESSION['id_admin'])) {
                                 // Calculate the overall daily average
                                 $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
                                 $rounded_overall_daily_average = number_format($overall_daily_average, 1);
+                                
         
                             }
                 
@@ -259,7 +275,16 @@ if (!isset($_SESSION['id_admin'])) {
                         echo "<td>" .$tanggal_akhir + '1' . " ". $selected_month ."</td>";
                         echo "<td>N/A</td>";
                         echo "<td>" . $rounded_overall_daily_average . "</td>";
-                        echo "<td>N/A</td>";
+                        if (count($actual_sales) > 0) {
+                            $mape_overall = array_sum(array_map(function($actual, $daily_avg) {
+                                // Check if daily_avg is not null to avoid division by zero
+                                return $daily_avg !== null ? abs(($actual - $daily_avg) / $actual) * 100 : null;
+                            }, $actual_sales, $daily_averages)) / count($actual_sales);
+                        
+                            echo "<td>" . ($mape_overall !== null ? number_format($mape_overall, 2) . "%" : 'N/A') . "</td>";
+                        } else {
+                            echo "<td>N/A</td>";
+                        }
                         echo "</tr>";
                 
                         echo "</tbody>";
@@ -368,7 +393,6 @@ if (!isset($_SESSION['id_admin'])) {
                         $overall_weekly_average = array_sum($weekly_averages) / count($weekly_averages);
                         $rounded_overall_weekly_average = number_format($overall_weekly_average, 1);
                     
-                        // Display the row for October 1, 2023
                         echo "<tr>";
                         echo "<td>" .$tanggal_akhir + '1' . " ". $selected_month ."</td>";
                         echo "<td>N/A</td>";

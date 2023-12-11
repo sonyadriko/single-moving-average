@@ -68,7 +68,7 @@
               <tr>
                 <?php 
                 $no = 1;
-                $get_data = mysqli_query($conn, "select * from penjualan join barang on penjualan.id_barang=barang.id_barang");
+                $get_data = mysqli_query($conn, "select * from penjualan");
                 while($display = mysqli_fetch_array($get_data)) {
                     $id = $display['id_penjualan'];
                     $id_barang = $display['nama_barang'];
@@ -80,7 +80,7 @@
                 ?>
                 <td class="text-truncate"><?php echo $no ?></td>
                 <td class="text-truncate"><?php echo $id_barang ?></td>
-                <td class="text-truncate"><?php echo $tanggal ?> September 2023</td>
+                <td class="text-truncate"><?php echo $tanggal ?></td>
                 <td class="text-truncate"><?php echo $jumlah ?></td>
                 <td class="text-truncate">
                     <a href='ubah_penjualan.php?GetID=<?php echo $id ?>' style="text-decoration: none; list-style: none;"><input type='submit' value='Ubah' id='editbtn' class="btn btn-primary btn-user" ></a>

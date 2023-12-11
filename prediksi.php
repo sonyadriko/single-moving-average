@@ -58,20 +58,35 @@
                     <option value="" selected disabled>Pilih Barang</option>
                     <?php
                     // Fetch data from the database
-                    $get_barang = mysqli_query($conn, "SELECT * FROM barang");
+                    // $get_barang = mysqli_query($conn, "SELECT * FROM penjualan");
+                    $get_barang = mysqli_query($conn, "SELECT DISTINCT id_penjualan, nama_barang FROM penjualan");
 
-                    // Check if there are rows in the result
-                    if (mysqli_num_rows($get_barang) > 0) {
-                        while ($barang = mysqli_fetch_assoc($get_barang)) {
-                            $id_barang = $barang['id_barang'];
-                            $nama_barang = $barang['nama_barang'];
-
+                    $unique_barang = array();
+                    while ($barang = mysqli_fetch_assoc($get_barang)) {
+                        $id_barang = $barang['id_barang'];
+                        $nama_barang = $barang['nama_barang'];
+                    
+                        // Menyaring hasil yang unik
+                        if (!in_array($nama_barang, $unique_barang)) {
+                            $unique_barang[] = $nama_barang;
+                    
                             // Generate options for the dropdown
                             echo "<option value='$id_barang'>$nama_barang</option>";
                         }
-                    } else {
-                        echo "<option value='' disabled>No barang available</option>";
                     }
+                    
+                    // Check if there are rows in the result
+                    // if (mysqli_num_rows($get_barang) > 0) {
+                    //     while ($barang = mysqli_fetch_assoc($get_barang)) {
+                    //         $id_barang = $barang['id_barang'];
+                    //         $nama_barang = $barang['nama_barang'];
+
+                    //         // Generate options for the dropdown
+                    //         echo "<option value='$id_barang'>$nama_barang</option>";
+                    //     }
+                    // } else {
+                    //     echo "<option value='' disabled>No barang available</option>";
+                    // }
                     ?>
                 </select>
             </fieldset>

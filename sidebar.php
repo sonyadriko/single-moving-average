@@ -8,7 +8,7 @@
         </li>
         <!-- <li> <a href="admin.php"><i class="fa fa-desktop"></i> <span>Admin</span> <span class="pull-right-container"></span> </a>
         </li> -->
-        <li> <a href="barang.php"><i class="fa fa-cube"></i> <span>Data Barang</span> <span class="pull-right-container"></span> </a>
+        <!-- <li> <a href="barang.php"><i class="fa fa-cube"></i> <span>Data Barang</span> <span class="pull-right-container"></span> </a> -->
         </li>
         <li> <a href="penjualan.php"> <i class="fa fa-shopping-cart"></i> <span>Data Penjualan</span></a> </li>
         <li> <a href="prediksi.php"><i class="fa fa-calculator"></i> <span>Prediksi</span> <span class="pull-right-container"></span> </a>

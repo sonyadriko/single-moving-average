@@ -47,7 +47,7 @@
     <!-- Main content -->
     <section class="content container-fluid">
       <div class="row">
-        <div class="col-lg-4 col-xs-6">
+        <!-- <div class="col-lg-4 col-xs-6">
           <div class="media-box">
             <div class="media-icon pull-left"><i class="icon-bargraph"></i> </div>
             <div class="media-info">
@@ -62,8 +62,8 @@
               </h3>
             </div>
           </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
+        </div> -->
+        <div class="col-lg-6 col-xs-6">
           <div class="media-box bg-sea">
             <div class="media-icon pull-left"><i class="icon-wallet"></i> </div>
             <div class="media-info">
@@ -78,7 +78,7 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-4 col-xs-6">
+        <div class="col-lg-6 col-xs-6">
           <div class="media-box bg-blue">
             <div class="media-icon pull-left"><i class="icon-basket"></i> </div>
             <div class="media-info">
