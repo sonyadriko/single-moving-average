@@ -195,6 +195,10 @@ if (!isset($_SESSION['id_admin'])) {
                                 // Calculate the overall daily average
                                 $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
                                 $rounded_overall_daily_average = number_format($overall_daily_average, 1);
+                                
+                                echo "<script>";
+                                echo "var roundedOverallDailyAverage = " . json_encode($rounded_overall_daily_average) . ";";
+                                echo "</script>";
                             }
                             echo "<tr>";
                             echo "<td>" . $sales_data[$i]['tanggal'] . " " . $selected_month . "</td>";
@@ -208,15 +212,20 @@ if (!isset($_SESSION['id_admin'])) {
                         echo "<td>N/A</td>";
                         echo "<td>" . $rounded_overall_daily_average . "</td>";
                         if (count($actual_sales) > 0) {
-                            $mape_overall = array_sum(array_map(function($actual, $daily_avg) {
+                            $mape_overall = array_sum(array_map(function ($actual, $daily_avg) {
                                 // Check if daily_avg is not null to avoid division by zero
                                 return $daily_avg !== null ? abs(($actual - $daily_avg) / $actual) * 100 : null;
                             }, $actual_sales, $daily_averages)) / count($actual_sales);
                         
-                            echo "<td>" . ($mape_overall !== null ? number_format($mape_overall, 2) . "%" : 'N/A') . "</td>";
+                            $mape_hasil = ($mape_overall !== null ? number_format($mape_overall, 2) : null);
+                            echo "<td>" . ($mape_hasil !== null ? $mape_hasil . "%" : 'N/A') . "</td>";
+                            echo "<script>";
+                            echo "var mape_overall = " . json_encode(floatval($mape_hasil)) . ";";
+                            echo "</script>";
                         } else {
                             echo "<td>N/A</td>";
                         }
+                        
                         echo "</tr>";
                         echo "</tbody>";
                         echo "</table>";
@@ -307,6 +316,9 @@ if (!isset($_SESSION['id_admin'])) {
                         // Calculate the overall weekly average after processing all days
                         $overall_weekly_average = array_sum($weekly_averages) / count($weekly_averages);
                         $rounded_overall_weekly_average = number_format($overall_weekly_average, 1);
+                        echo "<script>";
+                        echo "var roundedOverallWeeklyAverage = " . json_encode($rounded_overall_weekly_average) . ";";
+                        echo "</script>";
                         echo "<tr>";
                         echo "<td>" . ($tanggal_akhir + 1) . " ". $selected_month ."</td>";
                         echo "<td>N/A</td>";
@@ -316,7 +328,11 @@ if (!isset($_SESSION['id_admin'])) {
                                 // Check if daily_avg is not null to avoid division by zero
                                 return $daily_avg !== null ? abs(($actual - $daily_avg) / $actual) * 100 : null;
                             }, $actual_sales, $weekly_averages)) / count($actual_sales);
-                            echo "<td>" . ($mape_overall !== null ? number_format($mape_overall, 2) . "%" : 'N/A') . "</td>";
+                            $mape_hasil = ($mape_overall !== null ? number_format($mape_overall, 2) : null);
+                            echo "<td>" . ($mape_hasil !== null ? $mape_hasil . "%" : 'N/A') . "</td>";
+                            echo "<script>";
+                            echo "var mape_overall = " . json_encode(floatval($mape_hasil)) . ";";
+                            echo "</script>";
                         } else {
                             echo "<td>N/A</td>";
                         }
@@ -415,7 +431,10 @@ if (!isset($_SESSION['id_admin'])) {
                         $overall_twenty_day_average = array_sum($twenty_day_averages) / count($twenty_day_averages);
                         $rounded_overall_twenty_day_average = number_format($overall_twenty_day_average, 1);
                     
-                        // Display the row for October 1, 2023
+                        echo "<script>";
+                        echo "var roundedOverallTwentyDayAverage = " . json_encode($rounded_overall_twenty_day_average) . ";";
+                        echo "</script>";
+                        // Display the row 
                         echo "<tr>";
                         echo "<td>" . ($tanggal_akhir + 1) . " ". $selected_month ."</td>";
                         echo "<td>N/A</td>";
@@ -426,7 +445,11 @@ if (!isset($_SESSION['id_admin'])) {
                                 return $daily_avg !== null ? abs(($actual - $daily_avg) / $actual) * 100 : null;
                             }, $actual_sales, $twenty_day_averages)) / count($actual_sales);
                         
-                            echo "<td>" . ($mape_overall !== null ? number_format($mape_overall, 2) . "%" : 'N/A') . "</td>";
+                            $mape_hasil = ($mape_overall !== null ? number_format($mape_overall, 2) : null);
+                            echo "<td>" . ($mape_hasil !== null ? $mape_hasil . "%" : 'N/A') . "</td>";
+                            echo "<script>";
+                            echo "var mape_overall = " . json_encode(floatval($mape_hasil)) . ";";
+                            echo "</script>";
                         } else {
                             echo "<td>N/A</td>";
                         }
@@ -506,33 +529,34 @@ if (!isset($_SESSION['id_admin'])) {
     function saveData() {
         var urlParams = new URLSearchParams(window.location.search);
 
-// Retrieve values from the URL
-var namaBarang = urlParams.get("nama_barang");
-var durasi = urlParams.get("durasi");
-var bulan = urlParams.get("bulan");
-var tanggalAwal = urlParams.get("tanggal_awal");
-var tanggalAkhir = parseInt(urlParams.get("tanggal_akhir")); // Convert to integer
+        // Retrieve values from the URL
+        var namaBarang = urlParams.get("nama_barang");
+        var durasi = urlParams.get("durasi");
+        var bulan = urlParams.get("bulan");
+        var tanggalAwal = urlParams.get("tanggal_awal") + " " + bulan;
+        var tanggalAkh = urlParams.get("tanggal_akhir") + " " + bulan;
+        var tanggalAkhir = parseInt(urlParams.get("tanggal_akhir")); // Convert to integer
         var tanggalHasil = tanggalAkhir + 1;
         var tanggalHasilAkhir = tanggalHasil + " " + bulan;
         var moving_average;
         var mape;
 
         if (durasi == '3hari') {
-            moving_average = urlParams.get("rounded_overall_daily_average") || null;
-            mape = urlParams.get("mape_overall") || null;
+            moving_average = urlParams.get("rounded_overall_daily_average") || roundedOverallDailyAverage || null;
+            mape = urlParams.get("mape_overall") || mape_overall || null;
         } else if (durasi == '7hari') {
-            moving_average = urlParams.get("rounded_overall_weekly_average") || null;
-            mape = urlParams.get("mape_overall") || null;
-        } else if (durasi == '20hari') {
-            moving_average = urlParams.get("rounded_overall_twenty_day_average") || null;
-            mape = urlParams.get("mape_overall") || null;
+            moving_average = urlParams.get("rounded_overall_weekly_average") || roundedOverallWeeklyAverage || null;
+            mape = urlParams.get("mape_overall") || mape_overall || null;
+        } else if (durasi == '20harian') {
+            moving_average = urlParams.get("rounded_overall_twenty_day_average") || roundedOverallTwentyDayAverage || null;
+            mape = urlParams.get("mape_overall") || mape_overall || null;
         }
 
         console.log("namaBarang:", namaBarang);
         console.log("durasi:", durasi);
         console.log("bulan:", bulan);
         console.log("tanggalAwal:", tanggalAwal);
-        console.log("tanggalAkhir:", tanggalAkhir);
+        console.log("tanggalAkhir:", tanggalAkh);
         console.log("tanggalHasilAkhir:", tanggalHasilAkhir);
         console.log("movingAverage:", moving_average);
         console.log("mape:", mape);
@@ -544,7 +568,7 @@ var tanggalAkhir = parseInt(urlParams.get("tanggal_akhir")); // Convert to integ
                 barang: namaBarang,
                 durasi: durasi,
                 tanggal_awal: tanggalAwal,
-                tanggal_akhir: tanggalAkhir,
+                tanggal_akhir: tanggalAkh,
                 tanggal_hasil: tanggalHasilAkhir,
                 data_ramal: moving_average,
                 mape: mape,
