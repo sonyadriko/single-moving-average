@@ -24,6 +24,7 @@
             $_SESSION['id_admin'] = $row['id_admin'];
             $_SESSION['nama'] = $row['nama'];
             $_SESSION['email'] = $row['email'];
+            $_SESSION['role'] = $row['role'];
 
         } else {
             echo "

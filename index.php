@@ -116,7 +116,12 @@
                   <div>
                     <!-- <div class="user-img pull-left"> <img src="dist/img/img3.jpg" class="img-circle img-responsive" alt="User Image"> </div> -->
                     <div class="mail-contnet">
-                      <h5>Selamat Datang</h5>
+                      <h5>Selamat Datang <?php 
+                      if($_SESSION['role'] == '1')
+                      echo "Admin"; 
+                    elseif($_SESSION['role'] == '2')
+                    echo "Pemilik"
+                      ?></h5>
                       <p>Aplikasi prediksi penjualan dengan metode Single Moving Average.</p>
                       <!-- <span class="time m-bot-2">10:30 AM</span> -->
                     </div>

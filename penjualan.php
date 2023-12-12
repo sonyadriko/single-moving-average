@@ -4,7 +4,9 @@
   if (!isset($_SESSION['id_admin'])) {
       header("Location: login.php");
   }
+  
 ?>
+  
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,6 +51,72 @@
         <div class="col-md-12">
           <div class="chart-box">
             <h4>Data Penjualan</h4>
+            <form action="penjualan.php" method="post" enctype="multipart/form-data">
+              <label for="excelFile">Choose Excel File:</label>
+              <input type="file" name="excelFile" id="excelFile" accept=".xls, .xlsx" required>
+              <button type="submit" name="import">Import</button>
+            </form>  
+            <?php
+require 'vendor/autoload.php'; 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['import'])) {
+        // Process the uploaded Excel file for import
+        if (isset($_FILES['excelFile']) && $_FILES['excelFile']['error'] == UPLOAD_ERR_OK) {
+            $excelFile = $_FILES['excelFile']['tmp_name'];
+
+            // Load the Excel file with allowOnly setting
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($excelFile);
+
+            $worksheet = $spreadsheet->getActiveSheet();
+
+            // Prepare the statement for inserting data into the 'penjualan' table
+            $stmtInsert = $conn->prepare('INSERT INTO penjualan (nama_barang, tanggal, jumlah) VALUES (?, ?, ?)');
+
+            // Iterate through rows and insert data into the 'penjualan' table
+            foreach ($worksheet->getRowIterator() as $row) {
+                $rowData = [];
+                foreach ($row->getCellIterator() as $cell) {
+                    $rowData[] = $cell->getValue();
+                }
+
+                // Assuming the Excel columns are in the order of 'nama_barang', 'tanggal', 'jumlah'
+                if (count($rowData) == 3) {
+                    $nama_barang = $rowData[0];
+                    $tanggal = $rowData[1];
+                    $jumlah = $rowData[2];
+
+                    // Check if the combination of 'nama_barang' and 'tanggal' already exists
+                    $stmtSelect = $conn->prepare('SELECT COUNT(*) FROM penjualan WHERE nama_barang = ? AND tanggal = ?');
+                    $stmtSelect->bind_param('ss', $nama_barang, $tanggal);
+                    $stmtSelect->execute();
+
+                    $result = $stmtSelect->get_result();
+                    $rowCount = $result->fetch_assoc()['COUNT(*)'];
+
+                    // Insert data into the 'penjualan' table if the combination doesn't exist
+                    if ($rowCount == 0 && $nama_barang !== null && $tanggal !== null && $jumlah !== null) {
+                        if ($stmtInsert->execute([$nama_barang, $tanggal, $jumlah])) {
+                            echo 'Success: Data successfully imported.';
+                        } else {
+                            echo 'Error: Failed to save data. ' . $stmtInsert->error;
+                        }
+                    } else {
+                        echo 'Warning: Data with the combination of Kode and Nama barang already exists or Kode or Nama barang is empty or NULL."</br>"';
+                    }
+                }
+            }
+            echo 'Import successful!';
+        } else {
+            echo 'Error uploading the file.';
+        }
+    }
+}
+            ?>
+            </br>
             <div id="example_filter" class="dataTables_filter pull-right">
               <input class="form-control" id="placeholderInput" placeholder="Search" type="email">
             </div>
@@ -128,3 +196,24 @@ $("table").tablesort();
 </body>
 </html>
 
+<script>
+    function handleFormSubmit() {
+        // Display a loading message
+        document.getElementById("importMessages").innerHTML = "Importing...";
+
+        // Use AJAX to submit the form without reloading the page
+        var form = document.getElementById("importForm");
+        var formData = new FormData(form);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", form.action, true);
+        xhr.onload = function () {
+            // Update the messages container with the response from the server
+            document.getElementById("importMessages").innerHTML = xhr.responseText;
+        };
+        xhr.send(formData);
+
+        // Prevent the default form submission
+        return false;
+    }
+</script>
