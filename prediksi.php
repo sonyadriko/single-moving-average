@@ -101,25 +101,25 @@
                                     </select>
                                 </fieldset>
                             </div>
-                            <div class="col-md-4">
+                            <!-- <div class="col-md-4">
                                 <fieldset class="form-group">
                                     <label>Bulan : </label>
                                     <select class="form-control" id="bulan" name="bulan">
                                         <option value="" selected disabled>Pilih Bulan</option>
                                         <?php
                                         // Generate options for the dropdown (January to December)
-                                        $months = [
-                                            "January", "February", "March", "April", "May", "June",
-                                            "July", "August", "September", "October", "November", "December"
-                                        ];
+                                        // $months = [
+                                        //     "January", "February", "March", "April", "May", "June",
+                                        //     "July", "August", "September", "October", "November", "December"
+                                        // ];
 
-                                        foreach ($months as $month) {
-                                            echo "<option value='$month'>$month</option>";
-                                        }
+                                        // foreach ($months as $month) {
+                                        //     echo "<option value='$month'>$month</option>";
+                                        // }
                                         ?>
                                     </select>
                                 </fieldset>
-                            </div>
+                            </div> -->
                             <div class="col-md-4">
                                 <fieldset class="form-group">
                                     <label>Tanggal Awal : </label>
@@ -127,7 +127,9 @@
                                         <option value="" selected disabled>Pilih Tanggal Awal</option>
                                         <?php
                                         foreach ($unique_dates as $date) {
-                                            echo "<option value='$date'>$date</option>";
+                                            // Ubah format tanggal
+                                            $formatted_date = date("j F Y", strtotime($date));
+                                            echo "<option value='$date'>$formatted_date</option>";
                                         }
                                         ?>
                                     </select>

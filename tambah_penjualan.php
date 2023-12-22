@@ -48,26 +48,26 @@ if (!isset($_SESSION['id_admin'])) {
                                 <fieldset class="form-group">
                                     <label for="nama_barang">Nama Barang</label>
                                     <select class="form-control" id="nama_barang" name="nama_barang">
-                                        <?php
-                                        // Fetch data from the database
-                                        $get_barang = mysqli_query($conn, "SELECT * FROM barang");
+                                    <?php
+                                        $get_barang = mysqli_query($conn, "SELECT DISTINCT id_penjualan, nama_barang FROM penjualan");
 
-                                        // Check if there are rows in the result
-                                        if (mysqli_num_rows($get_barang) > 0) {
-                                            while ($barang = mysqli_fetch_assoc($get_barang)) {
-                                                $id_barang = $barang['id_barang'];
-                                                $nama_barang = $barang['nama_barang'];
-
+                                        $unique_barang = array();
+                                        while ($barang = mysqli_fetch_assoc($get_barang)) {
+                                            $id_barang = $barang['id_penjualan'];
+                                            $nama_barang = $barang['nama_barang'];
+                                        
+                                            // Menyaring hasil yang unik
+                                            if (!in_array($nama_barang, $unique_barang)) {
+                                                $unique_barang[] = $nama_barang;
+                                        
                                                 // Generate options for the dropdown
-                                                echo "<option value='$id_barang'>$nama_barang</option>";
+                                                echo "<option value='$nama_barang'>$nama_barang</option>";
                                             }
-                                        } else {
-                                            echo "<option value='' disabled>No barang available</option>";
                                         }
                                         ?>
                                     </select>
                                 </fieldset>
-                                <fieldset class="form-group">
+                                <!-- <fieldset class="form-group">
                                     <label for="tanggal">Tanggal</label>
                                     <select class="form-control" id="tanggal" name="tanggal">
                                         <?php
@@ -76,6 +76,10 @@ if (!isset($_SESSION['id_admin'])) {
                                         }
                                         ?>
                                     </select>
+                                </fieldset> -->
+                                <fieldset class="form-group">
+                                    <label for="tanggal">Tanggal</label>
+                                    <input class="form-control" type="date" id="tanggal" name="tanggal">
                                 </fieldset>
                                 <fieldset class="form-group">
                                     <label for="jumlah">Jumlah</label>
@@ -111,9 +115,10 @@ if (!isset($_SESSION['id_admin'])) {
         $jumlah = $_POST['jumlah'];
         // $harga_barang = mysqli_real_escape_string($conn, $_POST['harga_barang']); // Uncomment and use if needed
 
-        $insertData = "INSERT INTO penjualan (`id_penjualan`, `id_barang`, `tanggal`, `jumlah`) VALUES (NULL, '$id_barang', '$tanggal', '$jumlah')";
+        $insertData = "INSERT INTO penjualan (`id_penjualan`, `nama_barang`, `tanggal`, `jumlah`) VALUES (NULL, '$id_barang', '$tanggal', '$jumlah')";
+        // var_dump($insertData);
         $insertResult = mysqli_query($conn, $insertData);
-
+        
         if($insertResult){
             echo "<script>alert('Berhasil menambah data penjualan.')</script>";
             echo "<script>window.location.href = 'tambah_penjualan.php';</script>";

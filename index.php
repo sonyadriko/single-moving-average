@@ -26,7 +26,6 @@
 <link rel="stylesheet" href="dist/font-awesome/css/font-awesome.min.css">
 <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons.min.css">
 <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons-wind.min.css">
-<script src="plugins/charts/code/highcharts.js"></script>
 </head>
 
 <body class="sidebar-mini">
@@ -149,7 +148,5 @@
 <script src="dist/js/ovio.js"></script> 
 
 <!--charts--> 
-<script src="plugins/charts/code/modules/exporting.js"></script> 
-<script src="plugins/charts/chart-functions.js"></script>
 </body>
 </html>

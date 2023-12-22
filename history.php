@@ -91,9 +91,9 @@
                 <td class="text-truncate"><?php echo $no ?></td>
                 <td class="text-truncate"><?php echo $nama_barang ?></td>
                 <td class="text-truncate"><?php echo $durasi ?></td>
-                <td class="text-truncate"><?php echo $tanggal_awal ?></td>
-                <td class="text-truncate"><?php echo $tanggal_akhir ?></td>
-                <td class="text-truncate"><?php echo $tanggal_hasil ?></td>
+                <td class="text-truncate"><?php echo date("d F Y", strtotime($tanggal_awal)) ;?></td>
+                <td class="text-truncate"><?php echo date("d F Y", strtotime($tanggal_akhir)) ;?></td>
+                <td class="text-truncate"><?php echo date("d F Y", strtotime($tanggal_hasil)) ;?></td>
                 <td class="text-truncate"><?php echo $data_ramal ?></td>
                 <td class="text-truncate"><?php echo $mape ?>%</td>
                 <!-- <td class="text-truncate">

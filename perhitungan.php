@@ -23,6 +23,19 @@ if (!isset($_SESSION['id_admin'])) {
     <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons.min.css">
     <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons-wind.min.css">
     <script src="plugins/charts/code/highcharts.js"></script>
+
+    
+<?php
+        // Fetch distinct dates from the database
+        $get_dates = mysqli_query($conn, "SELECT DISTINCT tanggal FROM penjualan ORDER BY tanggal");
+
+        // Store unique dates in an array
+        $unique_dates = array();
+        while ($date = mysqli_fetch_assoc($get_dates)) {
+            $unique_dates[] = $date['tanggal'];
+        }
+    ?>
+
 </head>
 <body class="sidebar-mini">
     <div class="wrapper">
@@ -75,30 +88,16 @@ if (!isset($_SESSION['id_admin'])) {
                             </div>
                             <div class="col-md-4">
                                 <fieldset class="form-group">
-                                    <label>Bulan : </label>
-                                    <select class="form-control" id="bulan" name="bulan">
-                                        <option value="" selected disabled>Pilih Bulan</option>
-                                        <?php
-                                        $months = [
-                                            "January", "February", "March", "April", "May", "June",
-                                            "July", "August", "September", "October", "November", "December"
-                                        ];
-                                        foreach ($months as $month) {
-                                            echo "<option value='$month'>$month</option>";
-                                        } ?>
-                                    </select>
-                                </fieldset>
-                            </div>
-                            <div class="col-md-4">
-                                <fieldset class="form-group">
                                     <label>Tanggal Awal : </label>
-                                    <select class="form-control" id="tanggal_awal" name="tanggal_awal">
+                                    <select class="form-control" id="tanggal_awal" name="tanggal_awal" onchange="updateTanggalAkhirOptions()">
                                         <option value="" selected disabled>Pilih Tanggal Awal</option>
                                         <?php
-                                        // Generate options for the dropdown (1 to 30)
-                                        for ($i = 1; $i <= 30; $i++) {
-                                            echo "<option value='$i'>$i</option>";
-                                        }?>
+                                        foreach ($unique_dates as $date) {
+                                            // Ubah format tanggal
+                                            $formatted_date = date("j F Y", strtotime($date));
+                                            echo "<option value='$date'>$formatted_date</option>";
+                                        }
+                                        ?>
                                     </select>
                                 </fieldset>
                             </div>
@@ -110,46 +109,17 @@ if (!isset($_SESSION['id_admin'])) {
                                     </select>
                                 </fieldset>
                             </div>
+
                         </div>
                         <button type="button" class="btn btn-primary" onclick="hitung()">Hitung</button>
                     </form>
-                <script>
-                    // Function to update the options for Tanggal Akhir based on selected Tanggal Awal
-                    function updateTanggalAkhirOptions() {
-                        var tanggalAwal = document.getElementById("tanggal_awal");
-                        var tanggalAkhir = document.getElementById("tanggal_akhir");
-
-                        // Clear existing options
-                        tanggalAkhir.innerHTML = '<option value="" selected disabled>Pilih Tanggal Akhir</option>';
-
-                        // Get the selected value of Tanggal Awal
-                        var selectedTanggalAwal = tanggalAwal.value;
-
-                        // Generate options for Tanggal Akhir based on Tanggal Awal
-                        for (var i = parseInt(selectedTanggalAwal) + 1; i <= 30; i++) {
-                            tanggalAkhir.innerHTML += '<option value="' + i + '">' + i + '</option>';
-                        }
-                    }
-
-                    // Function to be called when Durasi, Bulan, or Tanggal Awal is changed
-                    function hitung() {
-                        var namaBarang = document.getElementById("nama_barang").value;
-                        var durasi = document.getElementById("durasi").value;
-                        var bulan = document.getElementById("bulan").value;
-                        var tanggalAwal = document.getElementById("tanggal_awal").value;
-                        var tanggalAkhir = document.getElementById("tanggal_akhir").value;
-                        document.getElementById("hitungForm").submit();
-                    }
-                    // Add event listeners to update Tanggal Akhir options when Tanggal Awal is changed
-                    document.getElementById("tanggal_awal").addEventListener("change", updateTanggalAkhirOptions);
-                </script>
+                
                 <?php
                 // Check if form is submitted
-                if (isset($_GET['nama_barang']) && isset($_GET['durasi']) && isset($_GET['bulan']) && isset($_GET['tanggal_awal']) && isset($_GET['tanggal_akhir'])) {
+                if (isset($_GET['nama_barang']) && isset($_GET['durasi']) && isset($_GET['tanggal_awal']) && isset($_GET['tanggal_akhir'])) {
                     // Retrieve selected product and duration
                     $id_barang = $_GET['nama_barang'];
                     $durasi = $_GET['durasi'];
-                    $selected_month = $_GET['bulan'];
                     $tanggal_awal = $_GET['tanggal_awal'];
                     $tanggal_akhir = $_GET['tanggal_akhir'];
                     echo '</br><button class="btn btn-success" onclick="saveData()">Save</button>';
@@ -195,20 +165,23 @@ if (!isset($_SESSION['id_admin'])) {
                                 // Calculate the overall daily average
                                 $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
                                 $rounded_overall_daily_average = number_format($overall_daily_average, 1);
+                                $tanggal_baru = date("Y-m-d", strtotime($tanggal_akhir . " +1 day"));
                                 
                                 echo "<script>";
                                 echo "var roundedOverallDailyAverage = " . json_encode($rounded_overall_daily_average) . ";";
                                 echo "</script>";
                             }
                             echo "<tr>";
-                            echo "<td>" . $sales_data[$i]['tanggal'] . " " . $selected_month . "</td>";
+                            // echo "<td>" . $sales_data[$i]['tanggal'] . "</td>";
+                            echo "<td>" . date("d F Y", strtotime($sales_data[$i]['tanggal'])) . "</td>";
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
                             echo "<td>" . ($daily_average !== null ? number_format($daily_average, 2) : 'N/A') . "</td>";
                             echo "<td>" . ($mape !== null ? number_format($mape, 2) . "%" : 'N/A') . "</td>";
                             echo "</tr>";
                         }
                         echo "<tr>";
-                        echo "<td>" . ($tanggal_akhir + 1) . " ". $selected_month ."</td>";
+                        // echo "<td>" . $tanggal_baru . "</td>";
+                        echo "<td>" . date("d F Y", strtotime($tanggal_baru)) . "</td>";
                         echo "<td>N/A</td>";
                         echo "<td>" . $rounded_overall_daily_average . "</td>";
                         if (count($actual_sales) > 0) {
@@ -246,13 +219,14 @@ if (!isset($_SESSION['id_admin'])) {
                                 $overall_daily_average = array_sum($daily_averages) / count($daily_averages);
                                 $rounded_overall_daily_average = number_format($overall_daily_average, 1);
                                 // Populate the arrays with daily averages and actual sales
-                                echo "dates.push('" . $data['tanggal'] . "');";
+                                echo "dates.push('" . date("d F Y", strtotime($data['tanggal'])) . "');";
                                 echo "dailyAverages.push(" . number_format($daily_average, 2) . ");";
                                 echo "actualSales.push(" . $data['jumlah'] . ");";
                             }
                         }
                         // Manually add the last date and the overall daily average to ensure they connect
-                        echo "dates.push('".$tanggal_akhir + '1'."');";
+                        echo "dates.push('".date("d F Y", strtotime($tanggal_baru))."');";
+
                         echo "dailyAverages.push(" . $rounded_overall_daily_average . ");";
                         echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
                         echo "var myChart = new Chart(ctx, {";
@@ -293,7 +267,8 @@ if (!isset($_SESSION['id_admin'])) {
                         // Calculate moving average considering today and the six days before for weekly duration
                         for ($i = 0; $i < count($sales_data); $i++) {
                             echo "<tr>";
-                            echo "<td>" . $sales_data[$i]['tanggal'] . " " . $selected_month . "</td>";
+                            // echo "<td>" . $sales_data[$i]['tanggal'] .  "</td>";
+                            echo "<td>" . date("d F Y", strtotime($sales_data[$i]['tanggal'])) . "</td>";
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
                             // Check if there are enough data points to calculate the moving average
                             if ($i < 6) {
@@ -316,11 +291,12 @@ if (!isset($_SESSION['id_admin'])) {
                         // Calculate the overall weekly average after processing all days
                         $overall_weekly_average = array_sum($weekly_averages) / count($weekly_averages);
                         $rounded_overall_weekly_average = number_format($overall_weekly_average, 1);
+                        $tanggal_baru = date("Y-m-d", strtotime($tanggal_akhir . " +1 day"));
                         echo "<script>";
                         echo "var roundedOverallWeeklyAverage = " . json_encode($rounded_overall_weekly_average) . ";";
                         echo "</script>";
                         echo "<tr>";
-                        echo "<td>" . ($tanggal_akhir + 1) . " ". $selected_month ."</td>";
+                        echo "<td>" . date("d F Y", strtotime($tanggal_baru)) . "</td>";
                         echo "<td>N/A</td>";
                         echo "<td>" . $rounded_overall_weekly_average . "</td>";
                         if (count($actual_sales) > 0) {
@@ -358,12 +334,12 @@ if (!isset($_SESSION['id_admin'])) {
                                 $overall_weekly_average = array_sum($weekly_averages) / count($weekly_averages);
                                 $rounded_overall_weekly_average = number_format($overall_weekly_average, 1);
                                 // Populate the arrays with weekly averages and actual sales
-                                echo "dates.push('" . $data['tanggal'] . "');";
+                                echo "dates.push('" . date("d F Y", strtotime($data['tanggal'])) . "');";
                                 echo "weeklyAverages.push(" . $weekly_average . ");";
                                 echo "actualSales.push(" . $data['jumlah'] . ");";
                             }
                         }
-                        echo "dates.push('".$tanggal_akhir + '1'."');";
+                        echo "dates.push('".date("d F Y", strtotime($tanggal_baru))."');";
                         echo "weeklyAverages.push(" . $rounded_overall_weekly_average . ");";
                         echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
                     
@@ -404,8 +380,7 @@ if (!isset($_SESSION['id_admin'])) {
                         // Calculate moving average considering today and the 19 days before for 20-day duration
                         for ($i = 0; $i < count($sales_data); $i++) {
                             echo "<tr>";
-                            echo "<td>" . $sales_data[$i]['tanggal'] . " " . $selected_month . "</td>";
-                            // echo "<td>" . ($i + 1) . " " . $selected_month . "</td>"; // Assuming days are numbered from 1 to 30
+                            echo "<td>" . date("d F Y", strtotime($sales_data[$i]['tanggal'])) . "</td>";
                             echo "<td>" . $sales_data[$i]['jumlah'] . "</td>";
                             // Check if there are enough data points to calculate the moving average
                             if ($i < 19) {
@@ -430,13 +405,13 @@ if (!isset($_SESSION['id_admin'])) {
                         // Calculate the overall 20-day average after processing all days
                         $overall_twenty_day_average = array_sum($twenty_day_averages) / count($twenty_day_averages);
                         $rounded_overall_twenty_day_average = number_format($overall_twenty_day_average, 1);
-                    
+                        $tanggal_baru = date("Y-m-d", strtotime($tanggal_akhir . " +1 day"));
                         echo "<script>";
                         echo "var roundedOverallTwentyDayAverage = " . json_encode($rounded_overall_twenty_day_average) . ";";
                         echo "</script>";
                         // Display the row 
                         echo "<tr>";
-                        echo "<td>" . ($tanggal_akhir + 1) . " ". $selected_month ."</td>";
+                        echo "<td>" . date("d F Y", strtotime($tanggal_baru)) . "</td>";
                         echo "<td>N/A</td>";
                         echo "<td>" . $rounded_overall_twenty_day_average . "</td>";
                         if (count($actual_sales) > 0) {
@@ -475,13 +450,13 @@ if (!isset($_SESSION['id_admin'])) {
                                 $rounded_overall_twenty_day_average = number_format($overall_twenty_day_average, 1);
                     
                                 // Populate the arrays with 20-day averages and actual sales
-                                echo "dates.push('" . $data['tanggal'] . "');";
+                                echo "dates.push('" . date("d F Y", strtotime($data['tanggal'])) . "');";
                                 echo "twentyDayAverages.push(" . $twenty_day_average . ");";
                                 echo "actualSales.push(" . $data['jumlah'] . ");";
                             }
                         }
 
-                        echo "dates.push('".$tanggal_akhir + '1'."');";
+                        echo "dates.push('".date("d F Y", strtotime($tanggal_baru))."');";
                         echo "twentyDayAverages.push(" . $rounded_overall_twenty_day_average . ");";
                         echo "actualSales.push(null);"; // Assuming you want to show null for Actual Sales on the 31st
                         echo "var myChart = new Chart(ctx, {";
@@ -539,12 +514,15 @@ if (!isset($_SESSION['id_admin'])) {
         // Retrieve values from the URL
         var namaBarang = urlParams.get("nama_barang");
         var durasi = urlParams.get("durasi");
-        var bulan = urlParams.get("bulan");
-        var tanggalAwal = urlParams.get("tanggal_awal") + " " + bulan;
-        var tanggalAkh = urlParams.get("tanggal_akhir") + " " + bulan;
-        var tanggalAkhir = parseInt(urlParams.get("tanggal_akhir")); // Convert to integer
-        var tanggalHasil = tanggalAkhir + 1;
-        var tanggalHasilAkhir = tanggalHasil + " " + bulan;
+        var tanggalAwal = urlParams.get("tanggal_awal");
+        var tanggalAkh = urlParams.get("tanggal_akhir");
+        // var tanggalAkhir = parseInt(urlParams.get("tanggal_akhir")); // Convert to integer
+        var dateObj = new Date(tanggalAkh);
+        dateObj.setDate(dateObj.getDate() + 1);
+        var tanggalHasil = dateObj.toISOString().split('T')[0];
+        // var tanggalHasil = tanggalAkh . " +1 day";
+        // $tanggal_baru = date("Y-m-d", strtotime($tanggal_akhir . " +1 day"));
+        var tanggalHasilAkhir = tanggalHasil;
         var moving_average;
         var mape;
 
@@ -561,10 +539,9 @@ if (!isset($_SESSION['id_admin'])) {
 
         console.log("namaBarang:", namaBarang);
         console.log("durasi:", durasi);
-        console.log("bulan:", bulan);
         console.log("tanggalAwal:", tanggalAwal);
         console.log("tanggalAkhir:", tanggalAkh);
-        console.log("tanggalHasilAkhir:", tanggalHasilAkhir);
+        console.log("tanggalHasilAkhir:", tanggalHasil);
         console.log("movingAverage:", moving_average);
         console.log("mape:", mape);
 

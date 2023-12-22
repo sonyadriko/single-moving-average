@@ -20,7 +20,15 @@
         for (var i = 0; i < uniqueDates.length; i++) {
             var date = uniqueDates[i];
             if (date > selectedTanggalAwal) {
-                tanggalAkhir.innerHTML += '<option value="' + date + '">' + date + '</option>';
+                var formattedDate = new Date(date);
+                var options = { day: 'numeric', month: 'long', year: 'numeric' };
+                var formattedDateString = formattedDate.toLocaleDateString('id-ID', options);
+        
+                // Log ke konsol untuk memeriksa nilai formattedDateString
+                // console.log(formattedDateString);
+        
+                // Tambahkan opsi ke Tanggal Akhir
+                tanggalAkhir.innerHTML += '<option value="' + date + '">' + formattedDateString + '</option>';
             }
         }
     }
@@ -31,7 +39,6 @@
         // For example:
         var namaBarang = document.getElementById("nama_barang").value;
         var durasi = document.getElementById("durasi").value;
-        var bulan = document.getElementById("bulan").value;
         var tanggalAwal = document.getElementById("tanggal_awal").value;
         var tanggalAkhir = document.getElementById("tanggal_akhir").value;
 
