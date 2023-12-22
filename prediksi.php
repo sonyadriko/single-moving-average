@@ -4,7 +4,9 @@
   if (!isset($_SESSION['id_admin'])) {
       header("Location: login.php");
   }
+  // Fetch distinct dates from the database
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,6 +29,18 @@
 <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons.min.css">
 <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons-wind.min.css">
 <script src="plugins/charts/code/highcharts.js"></script>
+
+<?php
+        // Fetch distinct dates from the database
+        $get_dates = mysqli_query($conn, "SELECT DISTINCT tanggal FROM penjualan ORDER BY tanggal");
+
+        // Store unique dates in an array
+        $unique_dates = array();
+        while ($date = mysqli_fetch_assoc($get_dates)) {
+            $unique_dates[] = $date['tanggal'];
+        }
+    ?>
+
 </head>
 
 <body class="sidebar-mini">
@@ -50,130 +64,87 @@
                 <div class="chart-box">
                     <h4>Prediksi</h4>
                     <form method="GET" action="perhitungan.php" id="hitungForm">
-    <div class="row">
-        <div class="col-md-4">
-            <fieldset class="form-group">
-                <label class="mb-3">Nama Barang : </label>
-                <select class="form-control" id="nama_barang" name="nama_barang">
-                    <option value="" selected disabled>Pilih Barang</option>
-                    <?php
-                    $get_barang = mysqli_query($conn, "SELECT DISTINCT id_penjualan, nama_barang FROM penjualan");
+                        <div class="row">
+                            <div class="col-md-4">
+                                <fieldset class="form-group">
+                                    <label class="mb-3">Nama Barang : </label>
+                                    <select class="form-control" id="nama_barang" name="nama_barang">
+                                        <option value="" selected disabled>Pilih Barang</option>
+                                        <?php
+                                        $get_barang = mysqli_query($conn, "SELECT DISTINCT id_penjualan, nama_barang FROM penjualan");
 
-                    $unique_barang = array();
-                    while ($barang = mysqli_fetch_assoc($get_barang)) {
-                        $id_barang = $barang['id_penjualan'];
-                        $nama_barang = $barang['nama_barang'];
-                    
-                        // Menyaring hasil yang unik
-                        if (!in_array($nama_barang, $unique_barang)) {
-                            $unique_barang[] = $nama_barang;
-                    
-                            // Generate options for the dropdown
-                            echo "<option value='$nama_barang'>$nama_barang</option>";
-                        }
-                    }
-                    ?>
-                </select>
-            </fieldset>
-        </div>
-        <div class="col-md-4">
-            <fieldset class="form-group">
-                <label>Durasi : </label>
-                <select class="form-control" id="durasi" name="durasi">
-                    <option value="" selected disabled>Pilih Durasi</option>
-                    <option value="3hari">3 Hari</option>
-                    <option value="7hari">7 Hari</option>
-                    <option value="20harian">20 Hari</option>
-                </select>
-            </fieldset>
-        </div>
-        <div class="col-md-4">
-            <fieldset class="form-group">
-                <label>Bulan : </label>
-                <select class="form-control" id="bulan" name="bulan">
-                    <option value="" selected disabled>Pilih Bulan</option>
-                    <?php
-                    // Generate options for the dropdown (January to December)
-                    $months = [
-                        "January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"
-                    ];
+                                        $unique_barang = array();
+                                        while ($barang = mysqli_fetch_assoc($get_barang)) {
+                                            $id_barang = $barang['id_penjualan'];
+                                            $nama_barang = $barang['nama_barang'];
+                                        
+                                            // Menyaring hasil yang unik
+                                            if (!in_array($nama_barang, $unique_barang)) {
+                                                $unique_barang[] = $nama_barang;
+                                        
+                                                // Generate options for the dropdown
+                                                echo "<option value='$nama_barang'>$nama_barang</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-4">
+                                <fieldset class="form-group">
+                                    <label>Durasi : </label>
+                                    <select class="form-control" id="durasi" name="durasi">
+                                        <option value="" selected disabled>Pilih Durasi</option>
+                                        <option value="3hari">3 Hari</option>
+                                        <option value="7hari">7 Hari</option>
+                                        <option value="20harian">20 Hari</option>
+                                    </select>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-4">
+                                <fieldset class="form-group">
+                                    <label>Bulan : </label>
+                                    <select class="form-control" id="bulan" name="bulan">
+                                        <option value="" selected disabled>Pilih Bulan</option>
+                                        <?php
+                                        // Generate options for the dropdown (January to December)
+                                        $months = [
+                                            "January", "February", "March", "April", "May", "June",
+                                            "July", "August", "September", "October", "November", "December"
+                                        ];
 
-                    foreach ($months as $month) {
-                        echo "<option value='$month'>$month</option>";
-                    }
-                    ?>
-                </select>
-            </fieldset>
-        </div>
-        <div class="col-md-4">
-            <fieldset class="form-group">
-                <label>Tanggal Awal : </label>
-                <select class="form-control" id="tanggal_awal" name="tanggal_awal">
-                    <option value="" selected disabled>Pilih Tanggal Awal</option>
-                    <?php
-                    // Generate options for the dropdown (1 to 30)
-                    for ($i = 1; $i <= 30; $i++) {
-                        echo "<option value='$i'>$i</option>";
-                    }
-                    ?>
-                </select>
-            </fieldset>
-        </div>
-        <div class="col-md-4">
-            <fieldset class="form-group">
-                <label>Tanggal Akhir : </label>
-                <select class="form-control" id="tanggal_akhir" name="tanggal_akhir">
-                    <option value="" selected disabled>Pilih Tanggal Akhir</option>
-                </select>
-            </fieldset>
-        </div>
-    </div>
-    <!-- Submit button -->
-    <button type="button" class="btn btn-primary" onclick="hitung()">Hitung</button>
-</form>
-
-<script>
-    // Function to update the options for Tanggal Akhir based on selected Tanggal Awal
-    function updateTanggalAkhirOptions() {
-        var tanggalAwal = document.getElementById("tanggal_awal");
-        var tanggalAkhir = document.getElementById("tanggal_akhir");
-
-        // Clear existing options
-        tanggalAkhir.innerHTML = '<option value="" selected disabled>Pilih Tanggal Akhir</option>';
-
-        // Get the selected value of Tanggal Awal
-        var selectedTanggalAwal = tanggalAwal.value;
-
-        // Generate options for Tanggal Akhir based on Tanggal Awal
-        for (var i = parseInt(selectedTanggalAwal) + 1; i <= 30; i++) {
-            tanggalAkhir.innerHTML += '<option value="' + i + '">' + i + '</option>';
-        }
-    }
-
-    // Function to be called when Durasi, Bulan, or Tanggal Awal is changed
-    function hitung() {
-        // Add your logic here to handle the calculation
-        // You can retrieve selected values using document.getElementById("element_id").value
-        // For example:
-        var namaBarang = document.getElementById("nama_barang").value;
-        var durasi = document.getElementById("durasi").value;
-        var bulan = document.getElementById("bulan").value;
-        var tanggalAwal = document.getElementById("tanggal_awal").value;
-        var tanggalAkhir = document.getElementById("tanggal_akhir").value;
-
-        // You can use these values to perform the calculation or send them to the server for processing
-        // Example: You might want to use AJAX to send the data to the server
-        // For simplicity, I'll just submit the form for now
-        document.getElementById("hitungForm").submit();
-    }
-
-    // Add event listeners to update Tanggal Akhir options when Tanggal Awal is changed
-    document.getElementById("tanggal_awal").addEventListener("change", updateTanggalAkhirOptions);
-</script>
-
-
-
+                                        foreach ($months as $month) {
+                                            echo "<option value='$month'>$month</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-4">
+                                <fieldset class="form-group">
+                                    <label>Tanggal Awal : </label>
+                                    <select class="form-control" id="tanggal_awal" name="tanggal_awal" onchange="updateTanggalAkhirOptions()">
+                                        <option value="" selected disabled>Pilih Tanggal Awal</option>
+                                        <?php
+                                        foreach ($unique_dates as $date) {
+                                            echo "<option value='$date'>$date</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-4">
+                                <fieldset class="form-group">
+                                    <label>Tanggal Akhir : </label>
+                                    <select class="form-control" id="tanggal_akhir" name="tanggal_akhir">
+                                        <option value="" selected disabled>Pilih Tanggal Akhir</option>
+                                    </select>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <!-- Submit button -->
+                        <button type="button" class="btn btn-primary" onclick="hitung()">Hitung</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -192,6 +163,15 @@
 <script src="dist/js/jquery.min.js"></script> 
 <script src="bootstrap/js/bootstrap.min.js"></script> 
 <script src="dist/js/ovio.js"></script> 
+<script src="proses.js"></script>
+<script>
+    // Pass PHP data to your JavaScript functions
+    var uniqueDates = <?php echo json_encode($unique_dates); ?>;
+    // Call a function in your script to initialize with the data
+    initScript(uniqueDates);
+</script>
 </body>
+
+
 </html>
 

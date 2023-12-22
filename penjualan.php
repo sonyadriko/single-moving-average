@@ -60,6 +60,26 @@
 require 'vendor/autoload.php'; 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+function mapMonth($indonesianMonth)
+{
+    $monthMapping = [
+        'Januari' => 'January',
+        'Februari' => 'February',
+        'Maret' => 'March',
+        'April' => 'April',
+        'Mei' => 'May',
+        'Juni' => 'June',
+        'Juli' => 'July',
+        'Agustus' => 'August',
+        'September' => 'September',
+        'Oktober' => 'October',
+        'November' => 'November',
+        'Desember' => 'December',
+    ];
+
+    return $monthMapping[$indonesianMonth];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['import'])) {
         // Process the uploaded Excel file for import
@@ -77,38 +97,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmtInsert = $conn->prepare('INSERT INTO penjualan (nama_barang, tanggal, jumlah) VALUES (?, ?, ?)');
 
             // Iterate through rows and insert data into the 'penjualan' table
-            foreach ($worksheet->getRowIterator() as $row) {
-                $rowData = [];
-                foreach ($row->getCellIterator() as $cell) {
-                    $rowData[] = $cell->getValue();
-                }
+            // ...
 
-                // Assuming the Excel columns are in the order of 'nama_barang', 'tanggal', 'jumlah'
-                if (count($rowData) == 3) {
-                    $nama_barang = $rowData[0];
-                    $tanggal = $rowData[1];
-                    $jumlah = $rowData[2];
+// Iterate through rows and insert data into the 'penjualan' table
+// ...
 
-                    // Check if the combination of 'nama_barang' and 'tanggal' already exists
-                    $stmtSelect = $conn->prepare('SELECT COUNT(*) FROM penjualan WHERE nama_barang = ? AND tanggal = ?');
-                    $stmtSelect->bind_param('ss', $nama_barang, $tanggal);
-                    $stmtSelect->execute();
+// Iterate through rows and insert data into the 'penjualan' table
+// ...
 
-                    $result = $stmtSelect->get_result();
-                    $rowCount = $result->fetch_assoc()['COUNT(*)'];
+// Iterate through rows and insert data into the 'penjualan' table
+// ...
 
-                    // Insert data into the 'penjualan' table if the combination doesn't exist
-                    if ($rowCount == 0 && $nama_barang !== null && $tanggal !== null && $jumlah !== null) {
-                        if ($stmtInsert->execute([$nama_barang, $tanggal, $jumlah])) {
-                            echo 'Success: Data successfully imported.';
-                        } else {
-                            echo 'Error: Failed to save data. ' . $stmtInsert->error;
-                        }
-                    } else {
-                        echo 'Warning: Data with the combination of Kode and Nama barang already exists or Kode or Nama barang is empty or NULL."</br>"';
-                    }
-                }
-            }
+// Iterate through rows and insert data into the 'penjualan' table
+foreach ($worksheet->getRowIterator() as $row) {
+  $rowData = [];
+  foreach ($row->getCellIterator() as $cell) {
+      $rowData[] = $cell->getValue();
+  }
+
+  // Assuming the Excel columns are in the order of 'nama_barang', 'tanggal', 'jumlah'
+  if (count($rowData) == 3) {
+      $nama_barang = $rowData[0];
+      $raw_tanggal = $rowData[1];
+      $jumlah = $rowData[2];
+
+      // echo 'Raw Date: ' . $raw_tanggal . '<br>'; // Print the raw date
+
+      // Map Indonesian month names to English month names
+      $raw_tanggal = preg_replace_callback('/\b(\p{L}+)\b/u', function ($matches) {
+          return mapMonth($matches[1]);
+      }, $raw_tanggal);
+
+      // Convert the date to the desired format
+      $dateObject = DateTime::createFromFormat('j-F-Y', $raw_tanggal);
+
+      if ($dateObject !== false) {
+          $tanggal = $dateObject->format('Y-m-d');
+      } else {
+          echo 'Error: Unable to parse the date.';
+
+          // You might want to handle this error condition appropriately
+          continue; // Skip to the next iteration
+      }
+// Debug information
+echo 'Debug: Nama Barang - ' . $nama_barang . ', Tanggal - ' . $tanggal . ', Jumlah - ' . $jumlah . '<br>';
+      // Check if the combination of 'nama_barang' and 'tanggal' already exists
+      $stmtSelect = $conn->prepare('SELECT COUNT(*) FROM penjualan WHERE nama_barang = ? AND tanggal = ? AND jumlah = ?');
+      $stmtSelect->bind_param('ssi', $nama_barang, $tanggal, $jumlah); // Adjust 'sss' to match the data types
+
+      $stmtSelect->execute();
+
+      $result = $stmtSelect->get_result();
+      $rowCount = $result->fetch_assoc()['COUNT(*)'];
+
+      // Insert data into the 'penjualan' table if the combination doesn't exist
+      if ($rowCount == 0 && $nama_barang !== null && $tanggal !== null && $jumlah !== null) {
+          if ($stmtInsert->execute([$nama_barang, $tanggal, $jumlah])) {
+              echo 'Success: Data successfully imported.';
+          } else {
+              echo 'Error: Failed to save data. ' . $stmtInsert->error;
+          }
+      } else {
+          echo 'Warning: Data with the combination of Kode and Nama barang already exists or Kode or Nama barang is empty or NULL."</br>"';
+      }
+  }
+}
+
+// ...
+
+// ...
+
             echo 'Import successful!';
         } else {
             echo 'Error uploading the file.';

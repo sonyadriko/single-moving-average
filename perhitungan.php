@@ -522,6 +522,13 @@ if (!isset($_SESSION['id_admin'])) {
     <script src="dist/js/jquery.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="dist/js/ovio.js"></script>
+    <script src="proses.js"></script>
+    <script>
+        // Pass PHP data to your JavaScript functions
+        var uniqueDates = <?php echo json_encode($unique_dates); ?>;
+        // Call a function in your script to initialize with the data
+        initScript(uniqueDates);
+    </script>
 </body>
 </html>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
