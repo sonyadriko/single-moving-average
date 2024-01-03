@@ -30,16 +30,49 @@
 <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons-wind.min.css">
 <script src="plugins/charts/code/highcharts.js"></script>
 
-<?php
+ <?php
         // Fetch distinct dates from the database
-        $get_dates = mysqli_query($conn, "SELECT DISTINCT tanggal FROM penjualan ORDER BY tanggal");
+        // $get_dates = mysqli_query($conn, "SELECT DISTINCT tanggal FROM penjualan ORDER BY tanggal");
+        // // $get_dates = mysqli_query($conn, "SELECT DISTINCT tanggal, nama_barang FROM penjualan ORDER BY tanggal");
 
-        // Store unique dates in an array
-        $unique_dates = array();
-        while ($date = mysqli_fetch_assoc($get_dates)) {
-            $unique_dates[] = $date['tanggal'];
-        }
+        // // Store unique dates in an array
+        // $unique_dates = array();
+        // while ($date = mysqli_fetch_assoc($get_dates)) {
+        //     $unique_dates[] = $date['tanggal'];
+        // } 
+
+        // Initialize $unique_dates as an empty array
+$unique_dates = array();
+
+// Fetch distinct dates from the database if a product is selected
+if (!empty($_GET['nama_barang'])) {
+    $nama_barang = $_GET['nama_barang'];
+
+    // Create a prepared statement to fetch distinct dates
+    $stmt = mysqli_prepare($conn, "SELECT DISTINCT tanggal FROM penjualan WHERE nama_barang = ? ORDER BY tanggal");
+
+    // Bind the parameter
+    mysqli_stmt_bind_param($stmt, "s", $nama_barang);
+
+    // Execute the query
+    mysqli_stmt_execute($stmt);
+
+    // Get the result
+    $result = mysqli_stmt_get_result($stmt);
+
+    // Store unique dates in the array
+    while ($date = mysqli_fetch_assoc($result)) {
+        $unique_dates[] = $date['tanggal'];
+    }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
+}
+
     ?>
+
+
+
 
 </head>
 
@@ -68,7 +101,7 @@
                             <div class="col-md-4">
                                 <fieldset class="form-group">
                                     <label class="mb-3">Nama Barang : </label>
-                                    <select class="form-control" id="nama_barang" name="nama_barang">
+                                    <select class="form-control" id="nama_barang" name="nama_barang" onchange="fetchDates()">
                                         <option value="" selected disabled>Pilih Barang</option>
                                         <?php
                                         $get_barang = mysqli_query($conn, "SELECT DISTINCT id_penjualan, nama_barang FROM penjualan");
@@ -90,6 +123,21 @@
                                     </select>
                                 </fieldset>
                             </div>
+                            <script>
+                                function fetchDates() {
+                                    var selectedProduct = $('#nama_barang').val();
+
+                                    $.ajax({
+                                        type: 'GET',
+                                        url: 'fetch_dates.php', // The PHP file handling the AJAX request
+                                        data: { nama_barang: selectedProduct },
+                                        success: function (data) {
+                                            // Update the "Tanggal Awal" dropdown with fetched dates
+                                            $('#tanggal_awal').html(data);
+                                        }
+                                    });
+                                }
+                            </script>
                             <div class="col-md-4">
                                 <fieldset class="form-group">
                                     <label>Durasi : </label>
@@ -101,25 +149,6 @@
                                     </select>
                                 </fieldset>
                             </div>
-                            <!-- <div class="col-md-4">
-                                <fieldset class="form-group">
-                                    <label>Bulan : </label>
-                                    <select class="form-control" id="bulan" name="bulan">
-                                        <option value="" selected disabled>Pilih Bulan</option>
-                                        <?php
-                                        // Generate options for the dropdown (January to December)
-                                        // $months = [
-                                        //     "January", "February", "March", "April", "May", "June",
-                                        //     "July", "August", "September", "October", "November", "December"
-                                        // ];
-
-                                        // foreach ($months as $month) {
-                                        //     echo "<option value='$month'>$month</option>";
-                                        // }
-                                        ?>
-                                    </select>
-                                </fieldset>
-                            </div> -->
                             <div class="col-md-4">
                                 <fieldset class="form-group">
                                     <label>Tanggal Awal : </label>
@@ -165,12 +194,16 @@
 <script src="dist/js/jquery.min.js"></script> 
 <script src="bootstrap/js/bootstrap.min.js"></script> 
 <script src="dist/js/ovio.js"></script> 
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="proses.js"></script>
 <script>
     // Pass PHP data to your JavaScript functions
     var uniqueDates = <?php echo json_encode($unique_dates); ?>;
     // Call a function in your script to initialize with the data
     initScript(uniqueDates);
+
+    
+
 </script>
 </body>
 

@@ -1,37 +1,69 @@
 
     // Function to update the options for Tanggal Akhir based on selected Tanggal Awal
     var uniqueDates;
-    function updateTanggalAkhirOptions() {
-        if (!uniqueDates) {
-            console.error("Error: uniqueDates is undefined");
-            return;
-        }
+
     
-        var tanggalAwal = document.getElementById("tanggal_awal");
-        var tanggalAkhir = document.getElementById("tanggal_akhir");
+    // function updateTanggalAkhirOptions() {
+    //     if (!uniqueDates) {
+    //         console.error("Error: uniqueDates is undefined");
+    //         return;
+    //     }
     
-        // Clear existing options
-        tanggalAkhir.innerHTML = '<option value="" selected disabled>Pilih Tanggal Akhir</option>';
+    //     var tanggalAwal = document.getElementById("tanggal_awal");
+    //     var tanggalAkhir = document.getElementById("tanggal_akhir");
     
-        // Get the selected value of Tanggal Awal
-        var selectedTanggalAwal = tanggalAwal.value;
+    //     // Clear existing options
+    //     tanggalAkhir.innerHTML = '<option value="" selected disabled>Pilih Tanggal Akhir</option>';
     
-        // Generate options for Tanggal Akhir based on Tanggal Awal
-        for (var i = 0; i < uniqueDates.length; i++) {
-            var date = uniqueDates[i];
-            if (date > selectedTanggalAwal) {
-                var formattedDate = new Date(date);
-                var options = { day: 'numeric', month: 'long', year: 'numeric' };
-                var formattedDateString = formattedDate.toLocaleDateString('id-ID', options);
+    //     // Get the selected value of Tanggal Awal
+    //     var selectedTanggalAwal = tanggalAwal.value;
+    
+    //     // Generate options for Tanggal Akhir based on Tanggal Awal
+    //     for (var i = 0; i < uniqueDates.length; i++) {
+    //         var date = uniqueDates[i];
+    //         if (date > selectedTanggalAwal) {
+    //             var formattedDate = new Date(date);
+    //             var options = { day: 'numeric', month: 'long', year: 'numeric' };
+    //             var formattedDateString = formattedDate.toLocaleDateString('id-ID', options);
         
-                // Log ke konsol untuk memeriksa nilai formattedDateString
-                // console.log(formattedDateString);
+    //             // Log ke konsol untuk memeriksa nilai formattedDateString
+    //             // console.log(formattedDateString);
         
-                // Tambahkan opsi ke Tanggal Akhir
-                tanggalAkhir.innerHTML += '<option value="' + date + '">' + formattedDateString + '</option>';
-            }
+    //             // Tambahkan opsi ke Tanggal Akhir
+    //             tanggalAkhir.innerHTML += '<option value="' + date + '">' + formattedDateString + '</option>';
+    //         }
+    //     }
+    // }
+
+   function updateTanggalAkhirOptions() {
+    if (!uniqueDates) {
+        console.error("Error: uniqueDates is undefined");
+        return;
+    }
+
+    var tanggalAwal = document.getElementById("tanggal_awal");
+    var tanggalAkhir = document.getElementById("tanggal_akhir");
+
+    // Clear existing options
+    tanggalAkhir.innerHTML = '<option value="" selected disabled>Pilih Tanggal Akhir</option>';
+
+    // Get the selected value of Tanggal Awal
+    var selectedTanggalAwal = tanggalAwal.value;
+
+    // Generate options for Tanggal Akhir based on Tanggal Awal
+    for (var i = 0; i < uniqueDates.length; i++) {
+        var date = uniqueDates[i];
+        if (date >= selectedTanggalAwal) {
+            var formattedDate = new Date(date);
+            var options = { day: 'numeric', month: 'long', year: 'numeric' };
+            var formattedDateString = formattedDate.toLocaleDateString('id-ID', options);
+
+            // Tambahkan opsi ke Tanggal Akhir
+            tanggalAkhir.innerHTML += '<option value="' + date + '">' + formattedDateString + '</option>';
         }
     }
+}
+
     // Function to be called when Durasi, Bulan, or Tanggal Awal is changed
     function hitung() {
         // Add your logic here to handle the calculation
