@@ -499,10 +499,14 @@ if (!isset($_SESSION['id_admin'])) {
     <script src="dist/js/ovio.js"></script>
     <script src="proses.js"></script>
     <script>
-        // Pass PHP data to your JavaScript functions
-        var uniqueDates = <?php echo json_encode($unique_dates); ?>;
-        // Call a function in your script to initialize with the data
-        initScript(uniqueDates);
+        function initUniqueDates() {
+            // Pass PHP data to your JavaScript functions
+            var uniqueDates = <?php echo json_encode($unique_dates); ?>;
+            // Call a function in your script to initialize with the data
+            console.log("Unique Dates:", uniqueDates);
+
+            initScript(uniqueDates);
+        }
     </script>
 </body>
 </html>

@@ -27,8 +27,9 @@
 <link rel="stylesheet" href="dist/et-line-font/et-line-font.css">
 <link rel="stylesheet" href="dist/font-awesome/css/font-awesome.min.css">
 <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons.min.css">
-<link type="text/css" rel="stylesheet" href="dist/weather/weather-icons-wind.min.css">
 <script src="plugins/charts/code/highcharts.js"></script>
+<script src="proses.js"></script>
+
 
  <?php
         // Fetch distinct dates from the database
@@ -42,32 +43,24 @@
         // } 
 
         // Initialize $unique_dates as an empty array
-$unique_dates = array();
-
-// Fetch distinct dates from the database if a product is selected
-if (!empty($_GET['nama_barang'])) {
-    $nama_barang = $_GET['nama_barang'];
-
-    // Create a prepared statement to fetch distinct dates
-    $stmt = mysqli_prepare($conn, "SELECT DISTINCT tanggal FROM penjualan WHERE nama_barang = ? ORDER BY tanggal");
-
-    // Bind the parameter
-    mysqli_stmt_bind_param($stmt, "s", $nama_barang);
-
-    // Execute the query
-    mysqli_stmt_execute($stmt);
-
-    // Get the result
-    $result = mysqli_stmt_get_result($stmt);
-
-    // Store unique dates in the array
-    while ($date = mysqli_fetch_assoc($result)) {
-        $unique_dates[] = $date['tanggal'];
-    }
-
-    // Close the statement
-    mysqli_stmt_close($stmt);
-}
+        $unique_dates = array();
+        if (!empty($_GET['nama_barang'])) {
+    
+            $nama_barang = $_GET['nama_barang'];
+            $stmt = mysqli_prepare($conn, "SELECT DISTINCT tanggal FROM penjualan WHERE nama_barang = ? ORDER BY tanggal");
+            mysqli_stmt_bind_param($stmt, "s", $nama_barang);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+        
+            // Store unique dates in the array
+            while ($date = mysqli_fetch_assoc($result)) {
+                $unique_dates[] = $date['tanggal'];
+            }
+        
+            // Close the statement
+            mysqli_stmt_close($stmt);
+        }
+        
 
     ?>
 
@@ -134,7 +127,11 @@ if (!empty($_GET['nama_barang'])) {
                                         success: function (data) {
                                             // Update the "Tanggal Awal" dropdown with fetched dates
                                             $('#tanggal_awal').html(data);
+
+                                            // Pass PHP data to your JavaScript functions
+                                          
                                         }
+
                                     });
                                 }
                             </script>
@@ -149,6 +146,11 @@ if (!empty($_GET['nama_barang'])) {
                                     </select>
                                 </fieldset>
                             </div>
+                            <?php
+
+// Fetch distinct dates from the database if a product is selected
+
+                            ?>
                             <div class="col-md-4">
                                 <fieldset class="form-group">
                                     <label>Tanggal Awal : </label>
@@ -194,16 +196,11 @@ if (!empty($_GET['nama_barang'])) {
 <script src="dist/js/jquery.min.js"></script> 
 <script src="bootstrap/js/bootstrap.min.js"></script> 
 <script src="dist/js/ovio.js"></script> 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="proses.js"></script>
 <script>
-    // Pass PHP data to your JavaScript functions
-    var uniqueDates = <?php echo json_encode($unique_dates); ?>;
-    // Call a function in your script to initialize with the data
-    initScript(uniqueDates);
-
-    
-
+      var uniqueDates = <?php echo json_encode($unique_dates); ?>;
+                                            // Call a function in your script to initialize with the data
+                                            console.log("Unique Dates:", uniqueDates);
+                                            initScript(uniqueDates);
 </script>
 </body>
 
