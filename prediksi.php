@@ -1,5 +1,7 @@
 <?php
  include 'koneksi.php';
+ include 'date_response.php';
+
  session_start();
   if (!isset($_SESSION['id_admin'])) {
       header("Location: login.php");
@@ -45,7 +47,6 @@
         // Initialize $unique_dates as an empty array
         $unique_dates = array();
         if (!empty($_GET['nama_barang'])) {
-    
             $nama_barang = $_GET['nama_barang'];
             $stmt = mysqli_prepare($conn, "SELECT DISTINCT tanggal FROM penjualan WHERE nama_barang = ? ORDER BY tanggal");
             mysqli_stmt_bind_param($stmt, "s", $nama_barang);
@@ -122,14 +123,18 @@
 
                                     $.ajax({
                                         type: 'GET',
-                                        url: 'fetch_dates.php', // The PHP file handling the AJAX request
+                                        url: 'fetch_dates.php', // The PHP file handling the AJAX request,
                                         data: { nama_barang: selectedProduct },
                                         success: function (data) {
                                             // Update the "Tanggal Awal" dropdown with fetched dates
-                                            $('#tanggal_awal').html(data);
-
-                                            // Pass PHP data to your JavaScript functions
-                                          
+                                            // $('#tanggal_awal').html(data);
+                                            let result = JSON.parse(data)
+                                            console.log(JSON.stringify(result))
+                                            console.log(result[0]['value'])
+                                            for (let index = 0; index < result.length + 1; index++) {
+                                                const element = array[index];
+                                                console.log(element)
+                                            }
                                         }
 
                                     });
@@ -197,10 +202,10 @@
 <script src="bootstrap/js/bootstrap.min.js"></script> 
 <script src="dist/js/ovio.js"></script> 
 <script>
-      var uniqueDates = <?php echo json_encode($unique_dates); ?>;
-                                            // Call a function in your script to initialize with the data
-                                            console.log("Unique Dates:", uniqueDates);
-                                            initScript(uniqueDates);
+    // var uniqueDates = <?php echo json_encode($unique_dates); ?>;
+    // // Call a function in your script to initialize with the data
+    // console.log("Unique Dates:", uniqueDates);
+    // initScript(uniqueDates);
 </script>
 </body>
 
