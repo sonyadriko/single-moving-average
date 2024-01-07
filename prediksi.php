@@ -50,6 +50,7 @@
             // Close the statement
             mysqli_stmt_close($stmt);
         }
+
         
 
     ?>
@@ -97,50 +98,73 @@
                                 </fieldset>
                             </div>
                             <script>
+                                // function fetchDates() {
+                                //     var selectedProduct = $('#nama_barang').val();
+
+                                //     $.ajax({
+                                //         type: 'GET',
+                                //         url: 'fetch_dates.php', // The PHP file handling the AJAX request,
+                                //         data: { nama_barang: selectedProduct },
+                                //         success: function (data) {
+                                //             // Update the "Tanggal Awal" dropdown with fetched dates
+                                //             let result = JSON.parse(data);
+                                //             let tanggalAwalDropdown = $('#tanggal_awal');
+
+                                //             tanggalAwalDropdown.empty();
+                                //             tanggalAwalDropdown.append('<option value="" selected disabled>Pilih Tanggal Awal</option>');
+                                //             // console.log(JSON.stringify(result));
+                                //             // console.log(result[0]['value']);
+                                //             for (let index = 0; index < result.length; index++) {
+                                //                 const date = result[index]['value'];
+                                //                 // console.log(element);
+                                //                 const formattedDate = formatDate(date);
+                                //                 tanggalAwalDropdown.append('<option value="' + date + '">' + formattedDate + '</option>');
+                                //             }
+                                //         }
+
+                                //     });
+                                // }
+                                var selectedDates = [];
                                 function fetchDates() {
-                                    var selectedProduct = $('#nama_barang').val();
+    var selectedProduct = $('#nama_barang').val();
 
-                                    // $.ajax({
-                                    //     type: 'GET',
-                                    //     url: 'fetch_dates.php', // The PHP file handling the AJAX request,
-                                    //     data: { nama_barang: selectedProduct },
-                                    //     success: function (data) {
-                                    //         // Update the "Tanggal Awal" dropdown with fetched dates
-                                    //         // $('#tanggal_awal').html(data);
-                                    //         let result = JSON.parse(data)
-                                    //         console.log(JSON.stringify(result))
-                                    //         console.log(result[0]['value'])
-                                    //         for (let index = 0; index < result.length + 1; index++) {
-                                    //             const element = result[index]['value'];
-                                    //             console.log(element)
-                                    //         }
-                                    //     }
+    $.ajax({
+        type: 'GET',
+        url: 'fetch_dates.php',
+        data: { nama_barang: selectedProduct },
+        success: function (data) {
+            let result = JSON.parse(data);
 
-                                    // });
+            let tanggalAwalDropdown = $('#tanggal_awal');
+            tanggalAwalDropdown.empty();
+            tanggalAwalDropdown.append('<option value="" selected disabled>Pilih Tanggal Awal</option>');
 
-                                    $.ajax({
-                                        type: 'GET',
-                                        url: 'fetch_dates.php', // The PHP file handling the AJAX request,
-                                        data: { nama_barang: selectedProduct },
-                                        success: function (data) {
-                                            // Update the "Tanggal Awal" dropdown with fetched dates
-                                            let result = JSON.parse(data);
-                                            let tanggalAwalDropdown = $('#tanggal_awal');
+            // Clear the existing selectedDates array
+            selectedDates = [];
 
-                                            tanggalAwalDropdown.empty();
-                                            tanggalAwalDropdown.append('<option value="" selected disabled>Pilih Tanggal Awal</option>');
-                                            // console.log(JSON.stringify(result));
-                                            // console.log(result[0]['value']);
-                                            for (let index = 0; index < result.length; index++) {
-                                                const date = result[index]['value'];
-                                                // console.log(element);
-                                                const formattedDate = formatDate(date);
-                                                tanggalAwalDropdown.append('<option value="' + date + '">' + formattedDate + '</option>');
-                                            }
-                                        }
+            for (let index = 0; index < result.length; index++) {
+                const date = result[index]['value'];
+                const formattedDate = formatDate(date);
+                tanggalAwalDropdown.append('<option value="' + date + '">' + formattedDate + '</option>');
+                selectedDates.push(date);
+            }
 
-                                    });
-                                }
+            // Debug statement to check selectedDates
+            console.log('Selected Dates:', selectedDates);
+
+            // Call the update function
+            updateTanggalAkhirOptions();
+        },
+        error: function () {
+            console.error('Error fetching dates');
+
+            // If an error occurs, update Tanggal Akhir with an empty array
+            updateTanggalAkhirOptions();
+        }
+    });
+}
+
+
                                 function formatDate(dateString) {
                                             const options = { day: 'numeric', month: 'long', year: 'numeric' };
                                             const formattedDate = new Date(dateString).toLocaleDateString('en-US', options);
@@ -160,6 +184,10 @@
                             </div>
                             <?php
                             ?>
+                            <script>
+                  
+
+                                </script>
                             <div class="col-md-4">
                                 <fieldset class="form-group">
                                     <label>Tanggal Awal : </label>
@@ -176,6 +204,29 @@
                                 </fieldset>
                             </div>
                             <script>
+                                // function updateTanggalAkhirOptions() {
+                                //     var selectedTanggalAwal = $('#tanggal_awal').val();
+                                //     var tanggalAkhirDropdown = $('#tanggal_akhir');
+
+                                //     // Clear existing options
+                                //     tanggalAkhirDropdown.empty();
+
+                                //     // Add a default disabled option
+                                //     tanggalAkhirDropdown.append('<option value="" selected disabled>Pilih Tanggal Akhir</option>');
+
+                                //     // Parse selected date to get the next day
+                                //     var nextDate = new Date(selectedTanggalAwal);
+                                //     nextDate.setDate(nextDate.getDate() + 1);
+
+                                //     // Loop from the next day to the end of the month
+                                //     while (nextDate.getMonth() == new Date(selectedTanggalAwal).getMonth()) {
+                                //         const formattedNextDate = formatDate(nextDate);
+                                //         tanggalAkhirDropdown.append('<option value="' + formattedNextDate + '">' + formattedNextDate + '</option>');
+                                //         nextDate.setDate(nextDate.getDate() + 1);
+                                //     }
+                                // }
+                          
+
                                 function updateTanggalAkhirOptions() {
                                     var selectedTanggalAwal = $('#tanggal_awal').val();
                                     var tanggalAkhirDropdown = $('#tanggal_akhir');
@@ -186,17 +237,29 @@
                                     // Add a default disabled option
                                     tanggalAkhirDropdown.append('<option value="" selected disabled>Pilih Tanggal Akhir</option>');
 
-                                    // Parse selected date to get the next day
-                                    var nextDate = new Date(selectedTanggalAwal);
-                                    nextDate.setDate(nextDate.getDate() + 1);
+                                    // Check if selectedTanggalAwal is not set
+                                    if (!selectedTanggalAwal) {
+                                        return;
+                                    }
 
-                                    // Loop from the next day to the end of the month
-                                    while (nextDate.getMonth() == new Date(selectedTanggalAwal).getMonth()) {
-                                        const formattedNextDate = formatDate(nextDate);
-                                        tanggalAkhirDropdown.append('<option value="' + formattedNextDate + '">' + formattedNextDate + '</option>');
-                                        nextDate.setDate(nextDate.getDate() + 1);
+                                    if (selectedDates && selectedDates.length > 0) {
+                                        // Find the maximum date in selectedDates
+                                        var maxDate = new Date(Math.max.apply(null, selectedDates.map(date => new Date(date))));
+
+                                        // Parse selectedTanggalAwal and maxDate
+                                        var startDate = new Date(selectedTanggalAwal);
+                                        startDate.setDate(startDate.getDate() + 1); // Start from the next day
+
+                                        // Loop from startDate to maxDate
+                                        while (startDate <= maxDate) {
+                                            const formattedDate = formatDate(startDate);
+                                            tanggalAkhirDropdown.append('<option value="' + startDate.toISOString() + '">' + formattedDate + '</option>');
+                                            startDate.setDate(startDate.getDate() + 1);
+                                        }
                                     }
                                 }
+
+
                             </script>
                             <div class="col-md-4">
                                 <fieldset class="form-group">

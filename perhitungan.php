@@ -52,7 +52,7 @@ if (!isset($_SESSION['id_admin'])) {
                 <?php
                 include 'koneksi.php';
                 $get_barang = mysqli_query($conn, "SELECT * FROM barang");?>
-                    <form method="GET" action="perhitungan.php" id="hitungForm">
+                    <!-- <form method="GET" action="perhitungan.php" id="hitungForm">
                         <div class="row">
                             <div class="col-md-4">
                                 <fieldset class="form-group">
@@ -112,7 +112,7 @@ if (!isset($_SESSION['id_admin'])) {
 
                         </div>
                         <button type="button" class="btn btn-primary" onclick="hitung()">Hitung</button>
-                    </form>
+                    </form> -->
                 
                 <?php
                 // Check if form is submitted
