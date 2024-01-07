@@ -34,17 +34,6 @@
 
 
  <?php
-        // Fetch distinct dates from the database
-        // $get_dates = mysqli_query($conn, "SELECT DISTINCT tanggal FROM penjualan ORDER BY tanggal");
-        // // $get_dates = mysqli_query($conn, "SELECT DISTINCT tanggal, nama_barang FROM penjualan ORDER BY tanggal");
-
-        // // Store unique dates in an array
-        // $unique_dates = array();
-        // while ($date = mysqli_fetch_assoc($get_dates)) {
-        //     $unique_dates[] = $date['tanggal'];
-        // } 
-
-        // Initialize $unique_dates as an empty array
         $unique_dates = array();
         if (!empty($_GET['nama_barang'])) {
             $nama_barang = $_GET['nama_barang'];
@@ -64,10 +53,6 @@
         
 
     ?>
-
-
-
-
 </head>
 
 <body class="sidebar-mini">
@@ -77,13 +62,7 @@
   <!-- Left side column. contains the logo and sidebar -->
   <?php include 'sidebar.php'?>
   
-  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper"> 
-    <!-- Content Header (Page header) -->
-    <!-- <section class="content-header">
-      <h1>Data Barang</h1>
-    </section> -->
-    
     <!-- Main content -->
     <section class="content container-fluid">
         <div class="row">
@@ -121,24 +100,52 @@
                                 function fetchDates() {
                                     var selectedProduct = $('#nama_barang').val();
 
+                                    // $.ajax({
+                                    //     type: 'GET',
+                                    //     url: 'fetch_dates.php', // The PHP file handling the AJAX request,
+                                    //     data: { nama_barang: selectedProduct },
+                                    //     success: function (data) {
+                                    //         // Update the "Tanggal Awal" dropdown with fetched dates
+                                    //         // $('#tanggal_awal').html(data);
+                                    //         let result = JSON.parse(data)
+                                    //         console.log(JSON.stringify(result))
+                                    //         console.log(result[0]['value'])
+                                    //         for (let index = 0; index < result.length + 1; index++) {
+                                    //             const element = result[index]['value'];
+                                    //             console.log(element)
+                                    //         }
+                                    //     }
+
+                                    // });
+
                                     $.ajax({
                                         type: 'GET',
                                         url: 'fetch_dates.php', // The PHP file handling the AJAX request,
                                         data: { nama_barang: selectedProduct },
                                         success: function (data) {
                                             // Update the "Tanggal Awal" dropdown with fetched dates
-                                            // $('#tanggal_awal').html(data);
-                                            let result = JSON.parse(data)
-                                            console.log(JSON.stringify(result))
-                                            console.log(result[0]['value'])
-                                            for (let index = 0; index < result.length + 1; index++) {
-                                                const element = array[index];
-                                                console.log(element)
+                                            let result = JSON.parse(data);
+                                            let tanggalAwalDropdown = $('#tanggal_awal');
+
+                                            tanggalAwalDropdown.empty();
+                                            tanggalAwalDropdown.append('<option value="" selected disabled>Pilih Tanggal Awal</option>');
+                                            // console.log(JSON.stringify(result));
+                                            // console.log(result[0]['value']);
+                                            for (let index = 0; index < result.length; index++) {
+                                                const date = result[index]['value'];
+                                                // console.log(element);
+                                                const formattedDate = formatDate(date);
+                                                tanggalAwalDropdown.append('<option value="' + date + '">' + formattedDate + '</option>');
                                             }
                                         }
 
                                     });
                                 }
+                                function formatDate(dateString) {
+                                            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                                            const formattedDate = new Date(dateString).toLocaleDateString('en-US', options);
+                                            return formattedDate;
+                                        }
                             </script>
                             <div class="col-md-4">
                                 <fieldset class="form-group">
@@ -152,9 +159,6 @@
                                 </fieldset>
                             </div>
                             <?php
-
-// Fetch distinct dates from the database if a product is selected
-
                             ?>
                             <div class="col-md-4">
                                 <fieldset class="form-group">
@@ -171,6 +175,29 @@
                                     </select>
                                 </fieldset>
                             </div>
+                            <script>
+                                function updateTanggalAkhirOptions() {
+                                    var selectedTanggalAwal = $('#tanggal_awal').val();
+                                    var tanggalAkhirDropdown = $('#tanggal_akhir');
+
+                                    // Clear existing options
+                                    tanggalAkhirDropdown.empty();
+
+                                    // Add a default disabled option
+                                    tanggalAkhirDropdown.append('<option value="" selected disabled>Pilih Tanggal Akhir</option>');
+
+                                    // Parse selected date to get the next day
+                                    var nextDate = new Date(selectedTanggalAwal);
+                                    nextDate.setDate(nextDate.getDate() + 1);
+
+                                    // Loop from the next day to the end of the month
+                                    while (nextDate.getMonth() == new Date(selectedTanggalAwal).getMonth()) {
+                                        const formattedNextDate = formatDate(nextDate);
+                                        tanggalAkhirDropdown.append('<option value="' + formattedNextDate + '">' + formattedNextDate + '</option>');
+                                        nextDate.setDate(nextDate.getDate() + 1);
+                                    }
+                                }
+                            </script>
                             <div class="col-md-4">
                                 <fieldset class="form-group">
                                     <label>Tanggal Akhir : </label>
@@ -187,16 +214,10 @@
             </div>
         </div>
     </section>
-
-    <!-- content --> 
   </div>
-  <!-- content-wrapper --> 
-  
   <!-- Main Footer -->
   <?php include 'footer.php' ?>
 </div>
-<!-- wrapper --> 
-
 <!-- jQuery --> 
 <script src="dist/js/jquery.min.js"></script> 
 <script src="bootstrap/js/bootstrap.min.js"></script> 
