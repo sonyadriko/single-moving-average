@@ -128,6 +128,33 @@
                 </div>
               </div>
             </div>
+            
+          </div>
+        </div>
+
+        <div class="col-lg-12">
+          <div class="chart-box"> 
+            
+          
+            <!-- Tab panes -->
+            <div class="tab-content">
+              <div role="tabpanel" class="tab-pane active" id="home">
+                <div class="message-widget">
+                  <div>
+                    <!-- <div class="user-img pull-left"> <img src="dist/img/img3.jpg" class="img-circle img-responsive" alt="User Image"> </div> -->
+                    <div class="mail-contnet">
+                      <h5>Template Excel</h5>
+                      <p>Download template excel dibawah ini jika ingin import data.</p>
+                      <a href="template.xlsx" download="template.xlsx">
+                        <button type="button" class="btn btn-primary">Unduh Template Excel</button>
+                    </a>
+                      <!-- <span class="time m-bot-2">10:30 AM</span> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
           </div>
         </div>
        
