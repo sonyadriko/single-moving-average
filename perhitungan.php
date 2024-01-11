@@ -122,7 +122,7 @@ if (!isset($_SESSION['id_admin'])) {
                     $durasi = $_GET['durasi'];
                     $tanggal_awal = $_GET['tanggal_awal'];
                     $tanggal_akhir = $_GET['tanggal_akhir'];
-                    echo '</br><button class="btn btn-success" onclick="saveData()">Save</button>';
+                    echo '</br><button id="saveButton" class="btn btn-success" onclick="saveData()">Save</button>';
                     // Fetch historical sales data for the selected product
                     $get_sales_data = mysqli_query($conn, "SELECT * FROM penjualan WHERE nama_barang = '$id_barang' AND tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir' ORDER BY tanggal ASC");
                     $sales_data = array();
@@ -513,6 +513,7 @@ if (!isset($_SESSION['id_admin'])) {
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     function saveData() {
+
         var urlParams = new URLSearchParams(window.location.search);
 
         // Retrieve values from the URL
@@ -564,6 +565,8 @@ if (!isset($_SESSION['id_admin'])) {
             },
             success: function(response) {
                 alert('Data saved successfully!');
+                document.getElementById('saveButton').disabled = true;
+
                 // Tambahan logika atau penanganan setelah penyimpanan berhasil
             },
             error: function(error) {
@@ -571,5 +574,7 @@ if (!isset($_SESSION['id_admin'])) {
                 // Tambahan logika atau penanganan jika terjadi kesalahan
             }
         });
+
+        // saveButton.disabled = true;
     }
 </script>
