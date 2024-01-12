@@ -54,6 +54,8 @@
             <div id="example_filter" class="dataTables_filter pull-right">
               <input class="form-control" id="placeholderInput" placeholder="Search" type="email">
             </div>
+            <!-- Add this button within the chart-box div -->
+            <button class="btn btn-primary btn-user" onclick="exportToPDF()">Export to PDF</button>
 
             <!-- <a href="tambah_penjualan.php" class="btn btn-primary btn-user">Tambah Penjualan</a> -->
 
@@ -98,7 +100,6 @@
                 <td class="text-truncate"><?php echo $data_ramal ?></td>
                 <td class="text-truncate"><?php echo $mape ?>%</td>
                 <td class="text-truncate">
-                    <!-- <a href='ubah_penjualan.php?GetID=<?php echo $id ?>' style="text-decoration: none; list-style: none;"><input type='submit' value='Ubah' id='editbtn' class="btn btn-primary btn-user" ></a> -->
                     <a href='delete_history.php?Del=<?php echo $id ?>' style="text-decoration: none; list-style: none;"><input type='submit' value='Hapus' id='delbtn' class="btn btn-primary btn-user" ></a>                       
                 </td>
               </tr>
@@ -134,6 +135,30 @@
 <script src="bootstrap/js/bootstrap.min.js"></script> 
 <script src="dist/js/ovio.js"></script> 
 <script src="plugins/tables/jquery.tablesort.js"></script> 
+<script>
+    function exportToPDF() {
+        // You can use AJAX to send a request to the server for exporting the data
+        // Here's a basic example, assuming you have a separate PHP file for handling exports
+
+        // Create a new FormData object if needed and append any necessary data
+        var formData = new FormData();
+
+        // Send an AJAX request to the server to handle the export
+        fetch("export_data_pdf.php", {
+            method: "POST",
+            body: formData,
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Handle the response from the server
+            alert(data); // You may want to update the UI or take other actions based on the server response
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+</script>
+
 <script type="text/javascript">
 (function($) {
   "use strict";
