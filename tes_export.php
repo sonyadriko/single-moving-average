@@ -29,13 +29,10 @@ error_reporting(E_ALL);
   <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons-wind.min.css">
   <script src="plugins/charts/code/highcharts.js"></script>
 </head>
-<body class="sidebar-mini">
+<body>
   <div class="wrapper"> 
-  <?php include 'header.php'?>
-    <!-- Left side column. contains the logo and sidebar -->
-    <?php include 'sidebar.php'?>
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper"> 
+    <div> 
       <!-- Main content -->
       <section class="content container-fluid">
         <div class="row">
@@ -46,11 +43,9 @@ error_reporting(E_ALL);
                 <input class="form-control" id="placeholderInput" placeholder="Search" type="email">
               </div>
               <!-- <button class="btn btn-primary btn-user" onclick="exportToPDF()">Export to PDF</button> -->
-              <form id="exportForm" action="tes_export.php" method="post" target="_blank">
-                  <button type="submit" class="btn btn-primary btn-user">Export to PDF</button>
-
-                  <!-- <button type="submit" class="btn btn-primary btn-user" onclick="return previewPDF()">Export to PDF</button> -->
-              </form>
+              <!-- <form id="exportForm" action="export_data_pdf.php" method="post" target="_blank">
+                  <button type="submit" class="btn btn-primary btn-user" onclick="return previewPDF()">Export to PDF</button>
+              </form> -->
               <table class="table table-responsive">
                 <thead>
                   <tr>
@@ -62,7 +57,7 @@ error_reporting(E_ALL);
                     <th class="sortable">Tanggal Hasil</th>
                     <th class="sortable">Data Ramal</th>
                     <th class="sortable">MAPE</th>
-                    <th class="sortable">Action</th>
+                    <!-- <th class="sortable">Action</th> -->
                   </tr>
                 </thead>
                 <tr>
@@ -87,17 +82,17 @@ error_reporting(E_ALL);
                   <td class="text-truncate"><?php echo date("d F Y", strtotime($tanggal_hasil)) ;?></td>
                   <td class="text-truncate"><?php echo $data_ramal ?></td>
                   <td class="text-truncate"><?php echo $mape ?>%</td>
-                  <td class="text-truncate">
+                  <!-- <td class="text-truncate">
                       <a href='delete_history.php?Del=<?php echo $id ?>' style="text-decoration: none; list-style: none;"><input type='submit' value='Hapus' id='delbtn' class="btn btn-primary btn-user" ></a>                       
-                      <!-- <a href='delete_history.php?Del=<?php echo $id ?>' style="text-decoration: none; list-style: none;"><input type='submit' value='Cetak' id='delbtn' class="btn btn-primary btn-user" ></a>                        -->
-                  </td>
+                      <!-- <a href='delete_history.php?Del=<?php echo $id ?>' style="text-decoration: none; list-style: none;"><input type='submit' value='Cetak' id='delbtn' class="btn btn-primary btn-user" ></a>              
+                  </td> -->
                 </tr>
                 <?php
                 $no++;
                   }
                 ?>
               </table>
-              <ul class="pagination m-bot-0">
+              <!-- <ul class="pagination m-bot-0">
                 <li> <a href="#" aria-label="Previous"> <span aria-hidden="true">«</span> </a> </li>
                 <li><a href="#">1</a></li>
                 <li><a href="#">2</a></li>
@@ -105,62 +100,22 @@ error_reporting(E_ALL);
                 <li><a href="#">4</a></li>
                 <li><a href="#">5</a></li>
                 <li> <a href="#" aria-label="Next"> <span aria-hidden="true">»</span> </a> </li>
-              </ul>
+              </ul> -->
             </div>
           </div>
         </div>
       </section>
       <!-- content --> 
     </div>
-    <!-- Main Footer -->
-    <?php include 'footer.php' ?>
   </div>
   <!-- jQuery --> 
   <script src="dist/js/jquery.min.js"></script> 
   <script src="bootstrap/js/bootstrap.min.js"></script> 
   <script src="dist/js/ovio.js"></script> 
   <script src="plugins/tables/jquery.tablesort.js"></script> 
-  
-<script>
-    function previewPDF() {
-        // Disable the default form submission
-        event.preventDefault();
-
-        // You can add additional logic for preview here if needed
-
-        // Show a confirmation dialog
-        if (confirm("Do you want to save the PDF?")) {
-            // If user chooses to save, submit the form
-            document.getElementById('exportForm').submit();
-        } else {
-            // If user chooses to cancel, do nothing
-            return false;
-        }
-    }
-</script>
   <script>
-   function exportToPDF() {
-       // Send an AJAX request to the server to handle the export
-       $.ajax({
-           type: "POST",
-           url: "export_data_pdf.php", // Update the URL to the script that handles PDF export
-           dataType: "json",
-           success: function (response) {
-               // Check if the export was successful
-               if (response.success) {
-                   // Redirect to the generated PDF file or perform any other actions
-                   window.location.href = response.fileUrl;
-               } else {
-                   // Handle the error, display a message, or take other actions
-                   alert("Error exporting to PDF: " + response.message);
-               }
-           },
-           error: function (xhr, status, error) {
-               console.error("Error:", error);
-           }
-       });
-   }
-</script>
+    window.print();
+    </script>
 
   <script type="text/javascript">
   (function($) {
