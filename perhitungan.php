@@ -52,67 +52,7 @@ if (!isset($_SESSION['id_admin'])) {
                 <?php
                 include 'koneksi.php';
                 $get_barang = mysqli_query($conn, "SELECT * FROM barang");?>
-                    <!-- <form method="GET" action="perhitungan.php" id="hitungForm">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <fieldset class="form-group">
-                                    <label class="mb-3">Nama Barang : </label>
-                                    <select class="form-control" id="nama_barang" name="nama_barang">
-                                        <option value="" selected disabled>Pilih Barang</option>
-                                        <?php
-                                        $get_barang = mysqli_query($conn, "SELECT DISTINCT id_penjualan, nama_barang FROM penjualan");
-                                        $unique_barang = array();
-                                        while ($barang = mysqli_fetch_assoc($get_barang)) {
-                                            $id_barang = $barang['id_penjualan'];
-                                            $nama_barang = $barang['nama_barang'];
-                                            // Menyaring hasil yang unik
-                                            if (!in_array($nama_barang, $unique_barang)) {
-                                                $unique_barang[] = $nama_barang;
-                                                // Generate options for the dropdown
-                                                echo "<option value='$nama_barang'>$nama_barang</option>";
-                                            }
-                                        }?>
-                                    </select>
-                                </fieldset>
-                            </div>
-                            <div class="col-md-4">
-                                <fieldset class="form-group">
-                                    <label>Durasi : </label>
-                                    <select class="form-control" id="durasi" name="durasi">
-                                        <option value="" selected disabled>Pilih Durasi</option>
-                                        <option value="3hari">3 Hari</option>
-                                        <option value="7hari">7 Hari</option>
-                                        <option value="20harian">20 Hari</option>
-                                    </select>
-                                </fieldset>
-                            </div>
-                            <div class="col-md-4">
-                                <fieldset class="form-group">
-                                    <label>Tanggal Awal : </label>
-                                    <select class="form-control" id="tanggal_awal" name="tanggal_awal" onchange="updateTanggalAkhirOptions()">
-                                        <option value="" selected disabled>Pilih Tanggal Awal</option>
-                                        <?php
-                                        foreach ($unique_dates as $date) {
-                                            // Ubah format tanggal
-                                            $formatted_date = date("j F Y", strtotime($date));
-                                            echo "<option value='$date'>$formatted_date</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </fieldset>
-                            </div>
-                            <div class="col-md-4">
-                                <fieldset class="form-group">
-                                    <label>Tanggal Akhir : </label>
-                                    <select class="form-control" id="tanggal_akhir" name="tanggal_akhir">
-                                        <option value="" selected disabled>Pilih Tanggal Akhir</option>
-                                    </select>
-                                </fieldset>
-                            </div>
 
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="hitung()">Hitung</button>
-                    </form> -->
                 
                 <?php
                 // Check if form is submitted
@@ -122,7 +62,8 @@ if (!isset($_SESSION['id_admin'])) {
                     $durasi = $_GET['durasi'];
                     $tanggal_awal = $_GET['tanggal_awal'];
                     $tanggal_akhir = $_GET['tanggal_akhir'];
-                    echo '</br><button id="saveButton" class="btn btn-success" onclick="saveData()">Save</button>';
+                    echo '</br><button id="saveButton" class="btn btn-success" onclick="saveData()">Save</button>'."<br>";
+                    echo '</br><button id="printButton" class="btn btn-success" onclick="printIn()">Print</button>';
                     // Fetch historical sales data for the selected product
                     $get_sales_data = mysqli_query($conn, "SELECT * FROM penjualan WHERE nama_barang = '$id_barang' AND tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir' ORDER BY tanggal ASC");
                     $sales_data = array();
@@ -511,6 +452,11 @@ if (!isset($_SESSION['id_admin'])) {
 </body>
 </html>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function printIn(){
+     window.print();
+    }   
+</script>
 <script>
     function saveData() {
 
