@@ -16,11 +16,21 @@
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 <title>Data Penjualan</title>
 
+<!-- Ganti jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Ganti DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+<!-- Ganti DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
 <!-- Bootstrap -->
 <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
 
 <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+
 
 <!-- Template style -->
 <link rel="stylesheet" href="dist/css/style.css">
@@ -31,22 +41,13 @@
 <script src="plugins/charts/code/highcharts.js"></script>
 </head>
 
-<!-- ... -->
-
 <body class="sidebar-mini">
 <div class="wrapper"> 
   
 <?php include 'header.php'?>
   <!-- Left side column. contains the logo and sidebar -->
   <?php include 'sidebar.php'?>
-  
-  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper"> 
-    <!-- Content Header (Page header) -->
-    <!-- <section class="content-header">
-      <h1>Data Barang</h1>
-    </section> -->
-    
     <!-- Main content -->
     <section class="content container-fluid">
       <div class="row">
@@ -58,6 +59,7 @@
               <input type="file" name="excelFile" id="excelFile" accept=".xls, .xlsx" required>
               <button type="submit" name="import">Import</button>
             </form>  
+           
             <?php
 require 'vendor/autoload.php'; 
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -130,8 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       // You might want to handle this error condition appropriately
                       continue; // Skip to the next iteration
                   }
-            // Debug information
-            // echo 'Debug: Nama Barang - ' . $nama_barang . ', Tanggal - ' . $tanggal . ', Jumlah - ' . $jumlah . '<br>';
+                  // Debug information
+                  // echo 'Debug: Nama Barang - ' . $nama_barang . ', Tanggal - ' . $tanggal . ', Jumlah - ' . $jumlah . '<br>';
                   // Check if the combination of 'nama_barang' and 'tanggal' already exists
                   $stmtSelect = $conn->prepare('SELECT COUNT(*) FROM penjualan WHERE nama_barang = ? AND tanggal = ? AND jumlah = ?');
                   $stmtSelect->bind_param('ssi', $nama_barang, $tanggal, $jumlah); // Adjust 'sss' to match the data types
@@ -141,21 +143,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   $result = $stmtSelect->get_result();
                   $rowCount = $result->fetch_assoc()['COUNT(*)'];
 
-                  // Insert data into the 'penjualan' table if the combination doesn't exist
-                  // if ($rowCount == 0 && $nama_barang !== null && $tanggal !== null && $jumlah !== null) {
-                  //     if ($stmtInsert->execute([$nama_barang, $tanggal, $jumlah])) {
-                  //         echo '<script>alert("Success: Data successfully imported.");</script>';
-                  //         // echo 'success';
-                  //     } else {
-                  //         // echo '<script>alert("Error: Failed to save data. ' . $stmtInsert->error ;
-                  //         echo '<script>alert("Error: Failed to save data.");</script>';
-                  //         // echo 'error';
-                  //     }
-                  // } else {
-                  //   // echo 'exists';/
-                  //   echo '<script>alert("Data with the combination of Kode and Nama barang already exists or Kode or Nama barang is empty or NULL.");</script>';
-                  //     // echo 'Warning: Data with the combination of Kode and Nama barang already exists or Kode or Nama barang is empty or NULL."</br>"';
-                  // }
                   if ($rowCount == 0 && $nama_barang !== null && $tanggal !== null && $jumlah !== null) {
                     if ($stmtInsert->execute([$nama_barang, $tanggal, $jumlah])) {
                         $alertMessage = 'Import successful!';  // Set the alert message
@@ -175,25 +162,22 @@ echo '<script>alert("' . $alertMessage . '");</script>';
 
     }
 }
-// if (!$alertDisplayed) {
-//   echo '<script>alert("Import successful!");</script>';
-// }
             ?>
             </br>
-            <div id="example_filter" class="dataTables_filter pull-right">
+            <!-- <div id="example_filter" class="dataTables_filter pull-right">
               <input class="form-control" id="placeholderInput" placeholder="Search" type="email">
-            </div>
-
+            </div> -->
+           
             <a href="tambah_penjualan.php" class="btn btn-primary btn-user">Tambah Penjualan</a>
-
-            <table class="table table-responsive">
+            <br> <br>
+            <table id="datatable" class="table table-responsive table-hover w-100">
               <thead>
                 <tr>
-                  <th class="sortable">No</th>
-                  <th class="sortable">Nama barang</th>
-                  <th class="sortable">Tanggal</th>
-                  <th class="sortable">Jumlah</th>
-                  <th class="sortable">opsi</th>
+                  <th>No</th>
+                  <th>Nama barang</th>
+                  <th>Tanggal</th>
+                  <th>Jumlah</th>
+                  <th>opsi</th>
                 </tr>
               </thead>
               <tr>
@@ -205,9 +189,6 @@ echo '<script>alert("' . $alertMessage . '");</script>';
                     $id_barang = $display['nama_barang'];
                     $tanggal = $display['tanggal'];
                     $jumlah = $display['jumlah'];
-                
-                
-                    
                 ?>
                 <td class="text-truncate"><?php echo $no ?></td>
                 <td class="text-truncate"><?php echo $id_barang ?></td>
@@ -223,15 +204,6 @@ echo '<script>alert("' . $alertMessage . '");</script>';
                 }
               ?>
             </table>
-            <ul class="pagination m-bot-0">
-              <li> <a href="#" aria-label="Previous"> <span aria-hidden="true">«</span> </a> </li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li> <a href="#" aria-label="Next"> <span aria-hidden="true">»</span> </a> </li>
-            </ul>
           </div>
         </div>
       </div>
@@ -246,42 +218,18 @@ echo '<script>alert("' . $alertMessage . '");</script>';
 <!-- wrapper --> 
 
 <!-- jQuery --> 
-<script src="dist/js/jquery.min.js"></script> 
+<!-- <script src="dist/js/jquery.min.js"></script>  -->
 <script src="bootstrap/js/bootstrap.min.js"></script> 
 <script src="dist/js/ovio.js"></script> 
 <script src="plugins/tables/jquery.tablesort.js"></script> 
-<script type="text/javascript">
-(function($) {
-  "use strict";
-$("table").tablesort();
-})(jQuery);
+<script type="text/javascript"> 
+    $(document).ready( function () {
+        $('table').DataTable();
+    });
 </script>
+
 </body>
 </html>
-
-<!-- <script>
-    function handleFormSubmit() {
-        // Display a loading message
-        document.getElementById("importMessages").innerHTML = "Importing...";
-
-        // Use AJAX to submit the form without reloading the page
-        var form = document.getElementById("importForm");
-        var formData = new FormData(form);
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", form.action, true);
-        xhr.onload = function () {
-            // Update the messages container with the response from the server
-            document.getElementById("importMessages").innerHTML = xhr.responseText;
-        };
-        xhr.send(formData);
-
-        // Prevent the default form submission
-        return false;
-    }
-</script> -->
-
-<!-- ... (di antara tag <head> dan <body>) ... -->
 <script>
     function handleFormSubmit() {
         // Display a loading message

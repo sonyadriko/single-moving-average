@@ -521,12 +521,9 @@ if (!isset($_SESSION['id_admin'])) {
         var durasi = urlParams.get("durasi");
         var tanggalAwal = urlParams.get("tanggal_awal");
         var tanggalAkh = urlParams.get("tanggal_akhir");
-        // var tanggalAkhir = parseInt(urlParams.get("tanggal_akhir")); // Convert to integer
         var dateObj = new Date(tanggalAkh);
         dateObj.setDate(dateObj.getDate() + 1);
         var tanggalHasil = dateObj.toISOString().split('T')[0];
-        // var tanggalHasil = tanggalAkh . " +1 day";
-        // $tanggal_baru = date("Y-m-d", strtotime($tanggal_akhir . " +1 day"));
         var tanggalHasilAkhir = tanggalHasil;
         var moving_average;
         var mape;
@@ -566,15 +563,11 @@ if (!isset($_SESSION['id_admin'])) {
             success: function(response) {
                 alert('Data saved successfully!');
                 document.getElementById('saveButton').disabled = true;
-
-                // Tambahan logika atau penanganan setelah penyimpanan berhasil
             },
             error: function(error) {
                 console.error('Error saving data:', error);
                 // Tambahan logika atau penanganan jika terjadi kesalahan
             }
         });
-
-        // saveButton.disabled = true;
     }
 </script>
