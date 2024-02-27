@@ -48,7 +48,6 @@ error_reporting(E_ALL);
               <!-- <button class="btn btn-primary btn-user" onclick="exportToPDF()">Export to PDF</button> -->
               <form id="exportForm" action="tes_export.php" method="post" target="_blank">
                   <button type="submit" class="btn btn-primary btn-user">Export to PDF</button>
-
                   <!-- <button type="submit" class="btn btn-primary btn-user" onclick="return previewPDF()">Export to PDF</button> -->
               </form>
               <table class="table table-responsive">
@@ -89,7 +88,7 @@ error_reporting(E_ALL);
                   <td class="text-truncate"><?php echo $mape ?>%</td>
                   <td class="text-truncate">
                       <a href='delete_history.php?Del=<?php echo $id ?>' style="text-decoration: none; list-style: none;"><input type='submit' value='Hapus' id='delbtn' class="btn btn-primary btn-user" ></a>                       
-                      <!-- <a href='delete_history.php?Del=<?php echo $id ?>' style="text-decoration: none; list-style: none;"><input type='submit' value='Cetak' id='delbtn' class="btn btn-primary btn-user" ></a>                        -->
+                      <a href='detail_history.php?Id=<?php echo $id ?>' style="text-decoration: none; list-style: none;"><input type='submit' value='Detail' id='detailbtn' class="btn btn-primary btn-user" ></a>                       
                   </td>
                 </tr>
                 <?php

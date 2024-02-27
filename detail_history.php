@@ -1,17 +1,14 @@
 <?php
 include 'koneksi.php'; session_start();
-if (!isset($_SESSION['id_admin'])) {
-    header("Location: login.php");
-} ?>
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Data Penjualan</title>
+    <title>Detail History</title>
     <!-- Bootstrap -->
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <!-- Google Font -->
@@ -23,19 +20,16 @@ if (!isset($_SESSION['id_admin'])) {
     <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons.min.css">
     <link type="text/css" rel="stylesheet" href="dist/weather/weather-icons-wind.min.css">
     <script src="plugins/charts/code/highcharts.js"></script>
-
-    
 <?php
         // Fetch distinct dates from the database
         $get_dates = mysqli_query($conn, "SELECT DISTINCT tanggal FROM penjualan ORDER BY tanggal");
-
+        $id_detail_history = $_GET['Id'];
         // Store unique dates in an array
         $unique_dates = array();
         while ($date = mysqli_fetch_assoc($get_dates)) {
             $unique_dates[] = $date['tanggal'];
         }
     ?>
-
 </head>
 <body class="sidebar-mini">
     <div class="wrapper">
@@ -53,14 +47,19 @@ if (!isset($_SESSION['id_admin'])) {
                 include 'koneksi.php';
                 $get_barang = mysqli_query($conn, "SELECT * FROM barang");?>
                 <?php
-                // Check if form is submitted
-                if (isset($_GET['nama_barang']) && isset($_GET['durasi']) && isset($_GET['tanggal_awal']) && isset($_GET['tanggal_akhir'])) {
-                    // Retrieve selected product and duration
-                    $id_barang = $_GET['nama_barang'];
-                    $durasi = $_GET['durasi'];
-                    $tanggal_awal = $_GET['tanggal_awal'];
-                    $tanggal_akhir = $_GET['tanggal_akhir'];
-                    echo '</br><button id="saveButton" class="btn btn-success" onclick="saveData()">Save</button>'."<br>";
+                    $sql = "SELECT * FROM peramalan
+                            JOIN BARANG ON peramalan.BARANG = BARANG.NAMA_BARANG
+                            WHERE peramalan.id_peramalan = '$id_detail_history'";
+                            // var_dump($sql);
+                    $prosessql = mysqli_query($conn, $sql);
+
+                    if ($prosessql) {
+                        while ($row = mysqli_fetch_assoc($prosessql)) {
+                            $id_barang = $row['nama_barang'];  // Replace 'id_barang' with the actual column name
+                            $durasi = $row['durasi'];        // Replace 'durasi' with the actual column name
+                            $tanggal_awal = $row['tanggal_awal'];  // Replace 'tanggal_awal' with the actual column name
+                            $tanggal_akhir = $row['tanggal_akhir'];
+                        }
                     echo '</br><button id="printButton" class="btn btn-success" onclick="printIn()">Print</button>';
                     // Fetch historical sales data for the selected product
                     $get_sales_data = mysqli_query($conn, "SELECT * FROM penjualan WHERE nama_barang = '$id_barang' AND tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir' ORDER BY tanggal ASC");
@@ -425,7 +424,9 @@ if (!isset($_SESSION['id_admin'])) {
                         echo "});";
                         echo "</script>";
                     }
-                }?>
+                        
+                }
+                ?>
             </div>
         </div>
     </div>
